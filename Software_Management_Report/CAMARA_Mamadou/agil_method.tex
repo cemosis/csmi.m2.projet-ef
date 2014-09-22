@@ -1,0 +1,110 @@
+\documentclass[12pt]{article}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage[english]{babel}
+\usepackage[babel,kerning=true]{microtype}
+\usepackage[nottoc,notlof,notlot]{tocbibind}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{xcolor}
+\usepackage{bbm} 
+\usepackage{listings}
+\usepackage{pgfplots}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    urlcolor=red,
+    linktoc=all
+    }
+\usepackage{pgfplotstable}
+\usepackage{enumerate}
+\usepackage{enumitem}
+\usepackage[utf8x]{inputenc}
+\usepackage{listings}
+\usepackage{geometry}
+\usepackage{tikz}
+\graphicspath{{picture/}}
+\geometry {
+    left  = 2.5cm,
+          right  = 2.5cm,
+          bottom = 2.5cm ,
+          top = 2.5cm ,
+}
+\pgfplotsset{scaled ticks=false,compat=1.8}
+\lstdefinestyle{customc++}{
+    belowcaptionskip=1\baselineskip,
+        breaklines=true,
+        frame=single,
+        %linewidth=7.5cm,
+        framexleftmargin=5mm,
+        %frameround=tttt,
+        %framexrightmargin=5mm,
+        xleftmargin=\parindent,
+        language=C++,
+        showstringspaces=false,
+        basicstyle=\footnotesize\ttfamily,
+        keywordstyle=\color{green!40!black},
+        ndkeywordstyle=\color{orange},
+        commentstyle=\color{purple!40!black},
+        identifierstyle=\color{blue},
+        stringstyle=\color{red},
+        numbers=left,
+        numbersep=7pt,
+}
+
+%\frenchbsetup{StandardLists=true}
+\lstset{style=customc++, emph={int,double,void, Double}, emphstyle=\color{red}, emph={[2]wavJava, Spectrum}, emphstyle=[2]\color{orange}}
+\title{Agile Software Method}
+\author{ 
+  Mamadou Camara ,\\
+  Cemosis,\\
+  UFR Mathématiques et Informatique/UDS}
+
+        \date{\today}
+\newpage
+
+        \begin{document}
+        \maketitle
+        \tableofcontents
+\newpage
+\section{Introduction}
+Agile Software Development is a method of web management project.
+It's firstly introtuced in 2001, with publication of ``Manifesto for Agile Softeware Development''.
+The aim of authors is to offer new mode computer development.
+
+The method works in base of iterative and incremental,doing jobs step by step.
+Collaborators work by priority, we have also control phases and exchange with client. 
+It's a flexible method which help to detect bug in need of regular feed-back with client and adapt to his needs.
+\section{Core Values of Agile Approach}
+ Essentially, we have four values of Agile method:
+\begin{itemize}
+\item Communication: exchange with collaborators is primordial,it is the thing to do before any jobs.
+\item Change: The provider should welcome any change and modifying in project process.
+\item Collaboration: relationships  with client are not based on contract but on will of differents parts to meet the precise needs of client.
+\item Operational functions: delivred to clients operational product.
+\end{itemize}
+\section{Principles of Agile Method}
+\begin{itemize}
+
+ \item First is to satisfy client,and see eventual changes as concurential advantages.
+\item We may often provide client an operational product (at most two weeks).
+\item Constant collaboration with work team and clients.
+\item Need motivated and welded persons to do project.
+\item  Promoted face to face exchanges,it is simple and easy.It is more effective.
+\item  Project progress can be measured through an operational softaware.
+\item The project must be built around a sustainable and steady pace.
+\item Pay special attention to technical excellence and good design.
+\item Promote simplicity by minimizing the workload without interest.
+\item Encourage self organized teams that produce a better design, architecture and specification.
+\item Constant reflection of the team to improve its efficiency by regularly adjusting its behavior.
+\end{itemize}
+\section{Conclusion}
+Agile Method is a paradigm which help for good management of a software project.
+It provides each collaborator bring added-values in project.
+This method is applied in others domains such that business management.It is called there business management process. 
+\end{document}
