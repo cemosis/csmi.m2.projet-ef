@@ -1,13 +1,4 @@
 csmi.m2.projet-ef
 =================
-
-<<<<<<< HEAD
-<<<<<<< HEAD
-toto Mamadou est la
-=======
-here is the list of branches
- - prudhomm
- - tlantz
- - panda
- 
->>>>>>> d091388969203b2cff31077a8d14b5557fc6324c
+mamadou didn't do his job !!!
+>>>>>>> 960726e6f3173fdcf1976b0fdcea6f9a42bd35b1
