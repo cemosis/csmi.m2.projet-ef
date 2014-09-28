@@ -1,0 +1,60 @@
+\documentclass[12pt]{article}
+ 
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[francais]{babel}
+\usepackage{enumerate}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{geometry}
+\usepackage{float}
+\usepackage{tikz}
+
+\geometry {
+	left = 2.5cm,
+	right = 2.5cm,
+	bottom = 2.5cm ,
+	top = 2.5cm ,
+}
+
+\lstdefinestyle{customjava}{
+ belowcaptionskip=1\baselineskip,
+ breaklines=true,
+ frame=single,
+ %linewidth=7.5cm,
+ framexleftmargin=5mm,
+ %frameround=tttt,
+ %framexrightmargin=5mm,
+ xleftmargin=\parindent,
+ language=java,
+ showstringspaces=false,
+ basicstyle=\footnotesize\ttfamily,
+ keywordstyle=\color{green!40!black},
+ ndkeywordstyle=\color{orange},
+ commentstyle=\color{purple!40!black},
+ identifierstyle=\color{blue},
+ stringstyle=\color{red},
+ numbers=left,
+ numbersep=7pt,
+}
+
+\frenchbsetup{StandardLists=true}
+\title {Les méthodes Agile}
+\author {Benjamin \emph{VANTHONG}}
+
+\lstset{style=customjava, emph={int,double,void, Double}, emphstyle=\color{red}, emph={[2]wavJava, Spectrum}, emphstyle=[2]\color{orange}}
+\begin{document}
+\maketitle 
+Les méthodes de type "Agile" sont des nouvelles méthodes de gestion de projets de développement informatique, inventées pour combler les approches traditionnelles de développement de type \textbf{cycle en V} ou en \textbf{cascade} jugées trop rigides car toutes les spécifications sont fixées au début, et aussi à cause de l'effet tunnel, c'est-à-dire que les développeurs n'ont pas d'autre choix que d'attendre la fin du travail pour pouvoir l'évaluer.\newline 
+
+Ainsi, au lieu de tout définir avec le client au début sur la réalisation du projet, la méthode Agile consiste à se fixer des objectifs à court terme en planifiant des courts cycles de développement appelés \textbf{Sprint} d'une durée d'environ deux à quatre semaines. A la fin de chaque Sprint les développeurs pourront présenter les fonctionnalités développées au client et ainsi d'obtenir son feedback précieux, utile pour ajuster ou corriger le travail déjà effectué. En impliquant le client dans le développement du projet, cela amène à davantage responsabiliser les développeurs. Les changements étant fréquents, il est donc préférable d'avoir un code suffisamment souple afin d'avoir un code qui fonctionne avec le moins de modifications possible.\newline
+ 
+Les méthodes agiles les plus connues sont la méthode Scrum publiée en 2001 et la méthode Extreme programming publiée en 1999.
+
+
+
+
+\end{document}
