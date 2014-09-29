@@ -2,9 +2,11 @@ Feel++ tutorial
 ===============
 
 
+# Compile
+
 To compile the code on irma-atlas, type
 ```
-cmake
+cmake .
 make
 ```
 
