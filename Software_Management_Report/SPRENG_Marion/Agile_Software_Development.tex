@@ -1,0 +1,122 @@
+\documentclass[english,12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\renewcommand{\ttdefault}{lmtt}
+\renewcommand{\baselinestretch}{1.2}
+\usepackage{amsmath}
+\usepackage[a4paper]{geometry}
+\usepackage[english]{babel}
+\usepackage {amssymb}
+\usepackage{fullpage}
+\newcommand{\R}{\mathbb{R}}
+\usepackage{graphicx}
+\usepackage[final]{pdfpages}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{verbatim}
+ \usepackage{fancyvrb}
+\usepackage{listingsutf8}
+\usepackage[hang,small]{caption}
+\definecolor{lbcolor}{rgb}{0.95,0.95,0.95}
+\definecolor{cblue}{rgb}{0.,0.0,0.6}
+\definecolor{lblue}{rgb}{0.1,0.1,0.4}
+\definecolor{ljk}{rgb}{0.50, 0.625, 0.70}
+\definecolor{creme}{RGB}{253, 241, 184}
+
+\definecolor{orange}{RGB}{255, 127, 0}
+\definecolor{orangef}{RGB}{204, 85, 0}
+\definecolor{vert}{RGB}{22, 184, 78}
+\definecolor{bordeau}{RGB}{109, 7, 26}
+\definecolor{rose}{RGB}{253, 63, 146}
+\definecolor{car}{RGB}{150,0, 24}
+\definecolor{grey}{RGB}{206,206,206}
+\definecolor{violine}{RGB}{161,6,132}
+\usepackage{fourier}
+\usepackage{hyperref}
+\usepackage{fancybox}
+\usepackage{frcursive}
+\usepackage{multirow}
+\usepackage{pict2e}
+\usepackage{subfigure}
+\usepackage{multicol}
+\usepackage{tikz}
+\usepackage{pgfplots,pgfplotstable}
+\pgfplotstableset{
+every head row/.style={before row=\toprule,after row=\midrule},
+every last row/.style={after row=\bottomrule}}
+
+\def\restriction#1#2{\mathchoice
+              {\setbox1\hbox{${\displaystyle #1}_{\scriptstyle #2}$}
+              \restrictionaux{#1}{#2}}
+              {\setbox1\hbox{${\textstyle #1}_{\scriptstyle #2}$}
+              \restrictionaux{#1}{#2}}
+              {\setbox1\hbox{${\scriptstyle #1}_{\scriptscriptstyle #2}$}
+              \restrictionaux{#1}{#2}}
+              {\setbox1\hbox{${\scriptscriptstyle #1}_{\scriptscriptstyle #2}$}
+              \restrictionaux{#1}{#2}}}
+\def\restrictionaux#1#2{{#1\,\smash{\vrule height .8\ht1 depth .85\dp1}}_{\,#2}} 
+
+\lstset{ 
+  backgroundcolor=\color{lbcolor},   
+  basicstyle=\footnotesize \tt,        
+  breakatwhitespace=false,         
+  breaklines=true,                 
+  captionpos=b,                    
+  commentstyle=\color{black!70},    
+  deletekeywords={...},            
+  escapeinside={\%*}{*)},          
+  extendedchars=true,              
+  frame={top,bottom},
+  inputencoding=utf8/latin1,                    
+  keepspaces=true,                 
+  keywordstyle=\bf \color{red!50},       
+  language=C++,  
+  mathescape=true,               
+  morekeywords={*,...},            
+  numbers=left,                    
+  numbersep=5pt,                   
+  numberstyle=\tiny\color{white}, 
+  rulecolor=\color{black},          
+  showspaces=false,                
+  showstringspaces=false,          
+  showtabs=false,                  
+  stepnumber=2,                    
+  stringstyle=\color{black!50},     
+  tabsize=2,    
+  texcl=true,                   
+  title=\lstname
+}
+\usepackage{pict2e}
+%\usepackage{fancyhdr}
+%\pagestyle{fancy}
+%\fancyhead{}
+%\renewcommand{\headrulewidth}{0cm}
+%\lhead{ZFGQSGB}
+%\fancyfoot[C]{\textbf{page \thepage}} 
+
+\title{Agile Software Development}
+\author{SPRENG Marion}
+
+\begin{document}
+\maketitle
+
+Generally speaking, a project requires a structured approach to achieve given targets. This management needs a planification and installation of milestones for the different tasks which have to be accomplished for the project success.
+Milestones are essential for checking the advancement in the project in order to testing the differents programmes created, to validate them or to correct them.
+The project is based on differents resources which can bring some constraints, as the humans resources, a team will be formed around it, this human aspect brings problems like difference of personalities and the need to keep group's motivation.
+Another point is the material equipment and the financial aspect, they can brake the advancement in some cases.
+These factors will play on the success of the project.\newline
+
+In 2001, seventeen experts write a manifest : "Manifesto for Agile Software Development", which will be the foundation of the agile method for the project management.
+This methodology is composed of four main values and of twelve principles.
+Basically, this type of management calls to valorise each person within the team by giving them some responsabilities and to trust them for do the work.
+The creation of a group dynamic based on the direct communication by daily meetings and regular reunions with customers is unavoidable. 
+In this methodology, the team is brought to self-organize and be accompanied rather than to be directed by a chief.
+The conduct line of the project is to regularly create functional softwares rather than doing documentation of it while minimizing the quantity of unnecessary work. These regular deliveries of softwares operationals to the customers   assure the project's continuity.
+This system favors a collaborative contact with the customer rather than the establishment of a contract to fix problems that may happen during the project.
+In this method, having a plan is obviously important but the responding to change and the flexibility are key for project success, the agility of this method also lies in the questioning of the functioning of the group and in his improvement when it's possible.
+
+\section{Bibliography}
+\nocite{*}
+\bibliographystyle{plain}
+\bibliography{biblio}
+\end{document}
