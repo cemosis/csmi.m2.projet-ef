@@ -24,7 +24,7 @@ int main( int argc, char** argv ) {
   // solve a( u, v ) = l( v )
   a.solve( _solution=u, _rhs=l );
 
-  std::cout << "|u-ue|=$"
+  std::cout << "|u-ue|= "
             << normL2(_range=elements(mesh),
                       _expr=(idv(u)-ue) )
             << "\n";
