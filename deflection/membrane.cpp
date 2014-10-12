@@ -30,6 +30,7 @@ int main(int argc,char **argv) {
         /* Element of functions spaces */
         auto u = Vh->element();
         auto v = Vh->element();
+        auto F = Vh->element();
 
 //f=exp(-0.5*(pow((R*x-x0)/sigma,2)))*(-4)*exp(-0.5*(pow((R*y-y0)/sigma,2))):x:y:T:sigma:x0:y0
 
@@ -43,12 +44,12 @@ int main(int argc,char **argv) {
 	     double   sigma = doption(_name = "sigma");
 	     double      R  = doption(_name = "R");
 	     double  theta  = doption(_name = "theta");
-	     double       A = doption(_name  = "A");
-                     x0 = 0.6*R*cos(theta);
+	     double       A = doption(_name  = "A"); 
+                    x0  = 0.6*R*cos(theta);
                      y0 = 0.6*R*sin(theta);
-         auto        f=expr("exp(-0.5*(pow((R*x-x0)/sigma,2)))*(-4)*exp(-0.5*(pow((R*y-y0)/sigma,2))):x:y:x0:y0:R:sigma");
+         auto        f  =   expr("exp(-0.5*(pow((R*x-x0)/sigma,2)))*(-4)*exp(-0.5*(pow((R*y-y0)/sigma,2))):x:y:x0:y0:R:sigma");
            std::cout<<"f = "<<f<<"\n";
-
+         F = project(_space = Vh, _range =elements(mesh),_expr =f);
 	/* linear form */
       	auto l = form1(_test= Vh);
              l = integrate (_range = elements(mesh) ,_expr = f*id(v));
@@ -57,12 +58,12 @@ int main(int argc,char **argv) {
              a = integrate(_range =elements(mesh) ,_expr=T*(gradt(u)*trans(grad(v)))) ;
              a += on(_range = boundaryfaces(mesh),_rhs = l,_element =u,_expr = cst(0.));
              a.solve(_rhs=l,_solution=u);
- 
+     auto  dfl = A*R*R*idv(u)/(8*pi*sigma*T);
 	/* add exporter */
         auto e = exporter (_mesh =mesh);
 	     e->add("u",u);
-//	     e->add("f",f);
-             e->save();
+         e->add("F",F);
+         e->save();
 	return 0;
 
 
