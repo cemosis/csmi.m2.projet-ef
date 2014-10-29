@@ -21,5 +21,8 @@
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #
 #
+cmake_minimum_required(VERSION 2.8)
+set(CMAKE_MODULE_PATH "/usr/share/feel/cmake/modules/")
+Find_Package(Feel++)
 set_directory_properties(PROPERTIES EXCLUDE_FROM_ALL TRUE)
 feelpp_add_application(diode SRCS diode.cpp diodegeo.cpp CFG diode.cfg LABELS doc)
