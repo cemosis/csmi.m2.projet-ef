@@ -1,0 +1,389 @@
+\documentclass[a4paper,oneside,10pt]{report}
+\usepackage[utf8]{inputenc}
+\usepackage[francais]{babel}
+\usepackage{fancyhdr}
+\usepackage[nodisplayskipstretch]{setspace} 
+\usepackage[dvips,a4paper]{geometry}
+\usepackage{titlesec} 
+\usepackage[hang,small,bf]{caption}
+\usepackage{footmisc}
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{caption}
+\usepackage[caption=false]{subfig} 
+\usepackage{graphicx}
+\usepackage{capt-of}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{amsthm}
+\usepackage{float}
+\usepackage[colorlinks=true,linkcolor=black,bookmarkstype=toc,linktocpage=true]{hyperref}
+\setstretch{1.2}
+\geometry{lmargin=2.5cm,rmargin=2.5cm,vmargin=4cm}
+\setlength{\parindent}{1cm}
+%\renewcommand{\thechapter}{\Roman{chapter}}
+\titleformat{\chapter}[display]
+{\bfseries\Large}
+{\filleft\MakeUppercase{\chaptertitlename} \Huge\thechapter}
+{4ex}
+{\titlerule
+\vspace{2ex}%
+\filright}
+[\vspace{2ex}%
+\titlerule]
+\renewcommand*\thepart{\arabic{part}}%
+\titlespacing*{\chapter}{0pt}{-60pt}{40pt}
+\pagestyle{plain} 
+\fancyhf{} 
+\setlength{\footskip}{30pt} 
+\setlength{\textheight}{646pt}
+\setlength{\hoffset}{0pt}
+\cfoot{\thepage} 
+\renewcommand{\headrulewidth}{1.2pt}
+\lhead{\leftmark}
+\setlength{\skip\footins}{1cm}
+\setlength{\footnotesep}{0.3cm}
+\renewcommand{\footnotelayout}{\scriptsize}
+\renewcommand{\chaptermark}[1]{\markboth{\footnotesize{#1}}{}}
+\setstretch{1.2}
+\pagenumbering{arabic}
+\renewcommand\lstlistingname{Source}
+\renewcommand\lstlistlistingname{Source}
+\lstset{
+language=fortran,
+ basicstyle=\setstretch{1}\footnotesize,
+ numbers=left,
+ numberstyle=\scriptsize,
+ numbersep=4pt,
+ tabsize=2, 
+ extendedchars=true,
+ breaklines=true,
+ % keywordstyle=\bfseries{\color{black}},
+  commentstyle=\color{gray},
+  frame=b,
+  stringstyle=\setstretch{1}\ttfamily,
+  showspaces=false,
+  showtabs=false,
+  xleftmargin=17pt,
+  framexleftmargin=17pt,
+  framexrightmargin=5pt,
+  framexbottommargin=4pt,
+  showstringspaces=false,
+		 }
+ \DeclareCaptionFormat{listing}{\colorbox[gray]{0.20}{\parbox{\textwidth}{\hspace {15pt}#1#2#3}}}
+% \captionsetup[lstlisting]{format=listing,labelfont=white,textfont=white,
+% singlelinecheck=false,margin=0pt,font={bf,footnotesize}}
+\setlength{\parindent}{0cm}
+
+\DeclareCaptionFont{white}{\color{white}}
+%\DeclareCaptionFormat{listing}{\colorbox[cmyk]{0.43, 0.35, 0.35,0.01}{\parbox{\textwidth}{\hspace{15pt}#1#2#3}}}
+\captionsetup[lstlisting]{format=listing,labelfont=white,textfont=white, singlelinecheck=false, margin=0pt, font={bf,footnotesize}}
+
+\newtheorem{mydef}{Définition}
+
+\newcommand\Image[3][]{%
+  \tabular[b]{@{}c@{}}\includegraphics[#1]{#2}\\
+    #3
+  \endtabular}
+
+
+% \newcommand{\E}{\mathbf{E}}
+% \newcommand{\H}{\mathbf{H}}
+
+
+\begin{document}
+\def\chaptername{travaux pratiques} 
+\input{./title_page_1.tex} 
+\pagestyle{plain}
+\setstretch{1.2}
+
+
+\tableofcontents
+
+\chapter{Modèle mathématique}
+\section{Présentation du problème}
+On considère ici les équations de Maxwell 2D a-dimensionnées et sans terme source telles que $\forall (\mathbf{x},t) \in \Omega \times [0,T]$,
+
+
+\begin{equation}
+\begin{aligned}
+\label{eq:1}
+\partial_t \mathbf{E} + \nabla \times \mathbf{H} &= 0,\\
+\partial_t \mathbf{H} + \nabla \times \mathbf{E} &= 0.
+\end{aligned}
+\end{equation}
+
+où $\mathbf{E}(\mathbf{x},t)$, désigne le champ électrique et $\mathbf{H}(\mathbf{x},t)$ le champ magnétique, tout deux dépendant de la variable d'espace $\mathbf{x}=(x_1,x_2)\in \Omega \subset \mathbb{R}^2$ et du temps $t$. En se plaçant en coordonnées cartésiennes et considérant le mode transverse magnétique (TM) (où $\mathbf{H}$ à une unique composante suivant $z$), il vient alors,
+
+\begin{eqnarray}
+\partial_t E_x - \partial_y H_z  &=& 0, \label{eq:2a}\\
+\partial_t E_y + \partial_x H_z &=& 0, \label{eq:2b}\\
+\partial_t H_z + \partial_x E_y - \partial_y E_x &=& 0, \label{eq:2c}
+\end{eqnarray}
+
+
+Ce sont ces équations que nous allons chercher à résoudre numériquement. Pour cela on utilisera la librairie C \texttt{SCHNAPS}. Cette librairie permet la résolution par méthode Galerkin discontinue de systèmes de lois de conservation hyperboliques de forme générale,
+
+\begin{equation}
+\label{eq:sysh}
+\partial_t \mathbf{W} +  \partial_i F^i(\mathbf{W}) = S(\mathbf{W}).
+\end{equation}
+
+où, $\mathbf{W}(\mathbf{x},t) \in \mathbb{R}^n$ désigne la variable conservative dépendant de la variable d'espace $\mathbf{x} = (x_1,x_2,x_3)$ et du temps $t$. Les termes $F^i$ désignant quant à eux les composantes du flux et $S$ le terme source.\newline
+
+\textbf{Remarque } : Afin d'alléger la notation, on utilise ici la convention d'Einstein sur les indices répétés : on substituera par $\partial_i F^i$ le terme $\sum_{i=1}^{3}\partial _i F^i$.\newline
+
+
+\section{Système de lois de conservation}
+
+Afin de résoudre numériquement les équations (\ref{eq:2a}), (\ref{eq:2b}) et (\ref{eq:2c}) via la librairie \texttt{SCHNAPS}, il nous faut tout d'abord les réécrire sous la forme d'un système de lois de conservation du type (\ref{eq:sysh}).\newline
+
+En notant tout d'abord le vecteur $\mathbf{W}$ et les matrices, $\mathbf{A}^1$ et $\mathbf{A}^2$, tels que
+
+\begin{equation}
+\mathbf{W}=
+\begin{pmatrix}
+E_x\\
+E_y\\
+B_z
+\end{pmatrix},
+\qquad
+\mathbf{A}^1=
+\begin{pmatrix}
+0 & 0 & 0\\
+0 & 0 & 1\\
+0 & 1 & 0
+\end{pmatrix},
+\qquad
+\mathbf{A}^2=
+\begin{pmatrix}
+0 & 0 & -1\\
+0 & 0 & 0\\
+-1 & 0 & 0\\
+\end{pmatrix},
+\end{equation}
+les équations (\ref{eq:2a}), (\ref{eq:2b}) et (\ref{eq:2c}) deviennent,
+
+\begin{equation}
+\label{eq:sysh2}
+\partial_t \mathbf{W} +  \mathbf{A}^i\partial_i \mathbf{W} = 0 \quad \forall (\mathbf{x},t) \in \Omega \times [0,T],
+\end{equation}
+
+
+Montrons à présent l'hyperbolicité du système (\ref{eq:sysh2}), grâce au théorème suivant, (\ref{})
+\newline
+\begin{mydef}
+Le système (\ref{eq:sysh2}) est dit hyperbolique si pour tout vecteur $(n_1,n_2 )^T \in 
+\mathbb{R}^2$, la matrice $\mathbf{A}^in_i = \mathbf{A}^1 n_1 + \mathbf{A}^2 n_2$ est diagonalisable et ses valeurs propres sont réelles.\newline
+\end{mydef}
+
+Cela nous donne, $\forall (n_1,n_2 )^T \in \mathbb{R}^2$,
+
+\begin{equation}
+\mathbf{A}^i n_i = \mathbf{A}^1 n_1 + \mathbf{A}^2 n_2 =
+\begin{pmatrix}
+0 & 0 & 0\\
+0 & 0 & n_1\\
+0 & n_1 & 0
+\end{pmatrix}
++
+\begin{pmatrix}
+0 & 0 & -n_2\\
+0 & 0 & 0\\
+-n_2 & 0 & 0
+\end{pmatrix}
+=
+\begin{pmatrix}
+0 & 0 & -n_2\\
+0 & 0 & n_1\\
+-n_2 & n_1 & 0\\
+\end{pmatrix}
+\end{equation}
+
+
+En résolvant en $\{\lambda_1,\lambda_2,\lambda_2\}$ l'équation suivante,
+
+\begin{equation}
+\mbox{det} (\mathbf{A}^i n_i - \lambda\mathbb{I}) =
+\begin{vmatrix}
+-\lambda_1 & 0 & -n_2\\
+0 & -\lambda_2 & n_1\\
+-n_2 & n_1 & -\lambda_3
+\end{vmatrix}
+=0,
+\end{equation}
+
+on obtient comme valeurs propres de la matrice $\mathbf{A}^i n_i$, 
+\begin{equation}
+\label{eq:vp}
+\lambda_1 = -\sqrt{n_1^2 + n_2^2},\quad \lambda_2 =0,\quad \lambda_3 = \sqrt{n_1^2 + n_2^2},
+\end{equation}
+
+et en posant pour tout $(n_1^2 + n_2^2) \neq 0 $ 
+$$r=\sqrt{n_1^2 + n_2^2},$$
+ on a pour vecteur propre associés,
+
+\begin{equation}
+\mathbf{v}_{\lambda_1}=\frac{1}{r}
+\begin{pmatrix}
+n2\\
+-n1\\
+r
+\end{pmatrix},
+\qquad
+\mathbf{v}_{\lambda_2}=\frac{1}{r}
+\begin{pmatrix}
+-\frac{rn_1}{n_2}\\
+r\\
+0
+\end{pmatrix},
+\qquad
+\mathbf{v}_{\lambda_3}=\frac{1}{r}
+\begin{pmatrix}
+-n2\\
+n1\\
+r
+\end{pmatrix}.
+\end{equation}
+
+Ainsi, le système est bien hyperbolique. De plus, comme la matrice $\mathbf{A}^in_i $ est symétrique, le système sera dit de Friedrich.\\
+
+Afin d'assurer l'existence et l'unicité d'une solution au problème (\ref{eq:sysh2}) nous lui ajoutons la condition initiale suivante,
+
+\begin{equation}
+\label{eq:ini} 
+\mathbf{W}(\mathbf{x},0)=\mathbf{W}_0(\mathbf{x}),
+\end{equation}
+
+ainsi que la condition au bord,
+
+\begin{equation}
+\label{eq:bound} 
+\mathbf{M}(\mathbf{x})(\mathbf{W}-\mathbf{W}_{in})=0\quad\forall \mathbf{x} \in \partial \Omega.
+\end{equation}
+
+avec, $\mathbf{W}_0$, $\mathbf{W}_{in}$ et $\mathbf{M}$ donnés.\newline
+
+L'existence et l'unicité d'une solution à (\ref{eq:sysh2}) sont subordonnées au fait que la matrice $\mathbf{M}$ vérifie,
+
+\begin{equation}
+\label{eq:ctr1}
+\mathbf{N} = \frac{1}{2} \mathbf{A}^in_i + \mathbf{M}\quad \mbox{(existence)},
+\end{equation}
+
+avec $\mathbf{N}$ une matrice positive et que,
+
+\begin{equation}
+\label{eq:ctr2}
+\mbox{Ker}\mathbf{M} \subset \mbox{Ker}\mathbf{A}^in_i \quad \mbox{(unicité)}.
+\end{equation}
+
+\textbf{Note :} Les contraintes (\ref{eq:ctr1}), (\ref{eq:ctr2}) portant sur la matrice $\mathbf{M}$ s'obtiennent par calcul d'une estimation d'énergie vérifiant le théorème de Hille-Yosida. Nous ne détaillerons pas ici ce calcul. Pour plus de détails on renverra le lecteur à (\ref{}).\\
+\newline
+
+
+Ainsi sous ces conditions, le problème revient alors à trouver $\mathbf{W}\in\Omega \times [0,T]$ solution de l'équation,
+
+\begin{equation}
+\label{eq:final}
+\mathcal{P} \left\{
+\begin{aligned}
+\partial_t \mathbf{W} +  \mathbf{A}^i\partial_i \mathbf{W} &= 0 &\quad &\forall (\mathbf{x},t) \in \Omega \times [0,T],\\
+\mathbf{W}(\mathbf{x},0)&=\mathbf{W}_0(\mathbf{x}) &\quad &\forall \mathbf{x} \in \Omega,\\
+\mathbf{M}(\mathbf{x})(\mathbf{W}-\mathbf{W}_{in})&=0&\quad&\forall \mathbf{x} \in \partial\Omega.
+\end{aligned}
+\right.
+\end{equation}
+
+
+\section{Formulation faible du problème}
+
+On considère un maillage fait de d'un nombre finis $N\in \mathbb{N}$ d'ouverts disjoints (ou cellules) $\Omega_k \subset \Omega$, $k=1\dots N$ tel que,
+\begin{equation}
+\bar{\Omega} = \cup_k \bar{\Omega}_k.
+\end{equation}
+
+Nous allons à présent raisonner localement, en définissant l'ensemble $V$ tel que la restriction de $\mathbf{W}(x,t)$ sur la maille $\Omega_k$ appartienne à $(H^1[\Omega_k])^3$, d'où,
+
+
+
+
+\section{Flux numérique}
+Comme $\mathbf{W}$ n'est pas supposé continue aux interfaces $\partial \Omega_k$ il nous est interdit de définir $F(\mathbf{W},n)$
+Pour les équations de Maxwell on utilisera un flux numérique décentré en amont tel que,
+
+%general
+% \begin{equation}
+% \begin{aligned}
+% F^*(\mathbf{W}_L,\mathbf{W},\mathbf{n}) &= \frac{1}{2}\mathbf{A}^i n_i(\mathbf{W_L} +\mathbf{W_R}) - \frac{1}{2}|\mathbf{A}^i n_i|(\mathbf{W_R} - \mathbf{W_L}),\\
+% &=\frac{1}{2}\mathbf{A}^i n_i(\mathbf{W_L} +\mathbf{W_R}) - \frac{1}{2}(\mathbf{A}^i n_i^+ - \mathbf{A}^i n_i^-)(\mathbf{W_R} - \mathbf{W_L}),
+% \end{aligned}
+% \end{equation}
+
+
+
+
+\begin{mydef}
+Pour les équation de Maxwell le flux numérique décentré en amont est donnée par,
+\begin{equation}
+\label{eq:fluxnum}
+F^*(\mathbf{W_L},\mathbf{W_R},\mathbf{n}) = \mathbf{A}^i n_i^+\mathbf{W_L} + \mathbf{A}^i n_i^-\mathbf{W_R}
+\end{equation}
+avec $\mathbf{A}^i n_i^+$ et $\mathbf{A}^i n_i^-$ les parties positives et négatives de $\mathbf{A}^i n_i$.
+\end{mydef}
+
+Pour les obtenir $\mathbf{A}^i n_i^+$ et $\mathbf{A}^i n_i^-$ on utilise tout d'abord le fait que, 
+
+\begin{equation}
+\mathbf{D} =\mathbf{P}^{-1}\mathbf{A}^in_i\mathbf{P}=
+\begin{pmatrix}
+-r & 0 &0 \\
+0& 0 & 0\\
+0 & 0 & r\\
+\end{pmatrix},
+\end{equation}
+
+avec $\mathbf{P}$ la matrice de passage et $\mathbf{P}^{-1}$ son inverse, telles que
+
+\begin{equation}
+\mathbf{P}=\frac{1}{r}
+\begin{pmatrix}
+n2 & -\frac{rn_1}{n_2} &-n2\\
+-n1 & r & n1\\
+r & 0 & r\\
+\end{pmatrix}
+\quad \mbox{et} \quad
+\mathbf{P}^{-1}=\frac{1}{2r}
+\begin{pmatrix}
+n_2 & -n_1 &r\\
+\frac{2n_1n_2}{r} & \frac{2n_2^2}{r} & 0\\
+-n_2^2 & n_1 & r\\
+\end{pmatrix}.
+\end{equation}
+
+Ensuite en notant par $\mathbf{D}^+$ et $\mathbf{D}^+$ les parties positive et négative de $\mathbf{D}$, il vient,
+
+\begin{equation}
+\mathbf{A}^in_i^+= \mathbf{P}\mathbf{D}^+\mathbf{P}^{-1} = \frac{1}{2}
+\begin{pmatrix}
+\frac{n_2^2}{r} & \frac{-n_1n_2}{r}  & -n_2 \\
+-n_1n_2& n_1^2 & n_1\\
+-n_2& n_1 & r\\
+\end{pmatrix}
+\end{equation}
+et
+\begin{equation}
+\mathbf{A}^in_i^-= \mathbf{P}\mathbf{D}^-\mathbf{P}^{-1} = \frac{1}{2}
+\begin{pmatrix}
+\frac{-n_2^2}{r} & \frac{n_1n_2}{r}  & -n_2 \\
+n_1n_2& -n_1^2 & n_1\\
+-n_2& n_1 & -r\\
+\end{pmatrix}.
+\end{equation}
+
+
+
+\bibliographystyle{plain}
+\bibliography{Rapport}
+
+\end{document}
