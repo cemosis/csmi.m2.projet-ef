@@ -79,9 +79,10 @@ public:
      * Discontinuous space
      */
 #if defined( USE_LEGENDRE )
-    typedef bases<Legendre<Order_poly,Scalar> > d_basis_type;
+	/*TODO DEFINE LEGENDRE PROPRELY ACTUALLY DO NOT WORK
+    typedef bases<Legendre<2,1,Order_poly, double> > d_basis_type; DO NOT WORK*/
 #else
-    typedef bases<Lagrange<Order_poly,Scalar,Discontinuous,PointSetEquiSpaced> > d_basis_type;
+   typedef bases<Lagrange<Order_poly,Scalar,Discontinuous,PointSetEquiSpaced> > d_basis_type;
 #endif
     typedef FunctionSpace<mesh_type, d_basis_type> d_space_type;
     typedef boost::shared_ptr<d_space_type> d_space_ptrtype;
@@ -106,7 +107,8 @@ public:
     typedef FunctionSpace<mesh_type, c_basis_type> c_space_type;
     typedef boost::shared_ptr<c_space_type> c_space_ptrtype;
     typedef typename c_space_type::element_type c_element_type;
-    typedef Exporter<mesh_type,Order_geo> export_type;
+    
+    typedef Exporter<mesh_type> export_type;
     typedef boost::shared_ptr<export_type> export_ptrtype;
     /*
      * Constructor
@@ -116,7 +118,8 @@ public:
     super(),
     M_backend( backend_type::build( this->vm() ) ),
     meshSize(this->vm()["hsize"].template as<double>() ) ,
-    Tfinal(this->vm()["Tfinal"].template as<double>() ),
+    CFL(this->vm()["CFL"].template as<double>() ) ,
+	Tfinal(this->vm()["Tfinal"].template as<double>() ),
     geo_filename(this->vm()["gmsh.filename"].template as<std::string>() ),
     shape( this->vm()["shape"].template as<std::string>() ),
     t_m( (method::MethodType)this->vm()["t_m"].template as<int>() ),
@@ -134,49 +137,43 @@ private:
     double meshSize;
     double dt ;
     double Tfinal;
+	double CFL;
     std::string shape;
     const std::string geo_filename;
     method::MethodType t_m;
     double time;
+    
     d_space_ptrtype Xh;
     c_space_ptrtype Ch;
-    mesh_ptrtype mesh;
+
     sparse_matrix_ptrtype D;
+    vector_ptrtype RHS_Ex, RHS_Ey, RHS_Bz;
+        
     std::map<std::string, std::pair<boost::timer, double> > timers;
-    export_ptrtype exporter;
-    vector_ptrtype RHS_Ex, RHS_Ey, RHS_Ez, RHS_Bx, RHS_By, RHS_Bz;
+
+    mesh_ptrtype mesh;
+    boost::shared_ptr<export_type> exporter;
 
 private : 
-    void assemble_LHS() ;
-    void assemble_RHS(  
-                                    d_element_type& Ex_ex,
-                                    d_element_type& Ey_ex,
-                                    d_element_type& Ez_ex,
-                                    d_element_type& Bx_ex,
-                                    d_element_type& By_ex,
-                                    d_element_type& Bz_ex,
+	
+
+   void assemble_LHS() ;
+    
+   void assemble_RHS(  
+                                    double time,
                                     d_element_type& Exn,
                                     d_element_type& Eyn,
-                                    d_element_type& Ezn,
-                                    d_element_type& Bxn,
-                                    d_element_type& Byn,
                                     d_element_type& Bzn
                                     );
                                     
     void solve(d_element_type& dtExn,
                 d_element_type& dtEyn,
-                d_element_type& dtEzn,
-                d_element_type& dtBxn,
-                d_element_type& dtByn,
                 d_element_type& dtBzn
                 );
                 
     void time_integrator(double dt, 
                                 d_element_type& Exn,
                                 d_element_type& Eyn,
-                                d_element_type& Ezn,
-                                d_element_type& Bxn,
-                                d_element_type& Byn,
                                 d_element_type& Bzn
                                 );
                                 
@@ -185,9 +182,6 @@ private :
     void exportResults(double time, 
                                 d_element_type& Exn,
                                 d_element_type& Eyn,
-                                d_element_type& Ezn,
-                                d_element_type& Bxn,
-                                d_element_type& Byn,
                                 d_element_type& Bzn
                               );
 
@@ -197,7 +191,7 @@ template<int Dim,int Order_poly,int Order_geo>
 void 
 Maxwell_DG<Dim, Order_poly, Order_geo>::init()
 {
-    if ( !this->vm().count( "nochdir" ) == false )
+    if ( !this->vm().count( "nochdir" ) == false ) //change to true
         Environment::changeRepository( boost::format( "examples/maxwell/%1%/%2%-%3%/P%4%-P%5%/h_%6%/" )
                                        % this->about().appName()
                                        % shape
@@ -206,9 +200,11 @@ Maxwell_DG<Dim, Order_poly, Order_geo>::init()
                                        % Order_geo
                                        % meshSize);
     
-    mesh = createGMSHMesh( _mesh=new Mesh<Simplex<Dim,Order_geo>>, 
-                            _update=MESH_CHECK|MESH_UPDATE_FACES|MESH_UPDATE_EDGES|MESH_RENUMBER,
-                            _desc=geo( _filename=geo_filename, _h=meshSize ) );
+    
+    mesh = createGMSHMesh( _mesh=new mesh_type, 
+                           _update=MESH_CHECK|MESH_UPDATE_FACES|MESH_UPDATE_EDGES|MESH_RENUMBER,
+                           _desc=geo( _filename=geo_filename, _h=meshSize ));
+    
     
     export_ptrtype exporter( export_type::New( this->vm(),
                                      ( boost::format( "%1%-%2%" )
@@ -225,9 +221,6 @@ Maxwell_DG<Dim, Order_poly, Order_geo>::init()
     D = M_backend->newMatrix( _test=Xh, _trial=Xh );
     RHS_Ex = M_backend->newVector( Xh );
     RHS_Ey = M_backend->newVector( Xh );
-    RHS_Ez = M_backend->newVector( Xh );
-    RHS_Bx = M_backend->newVector( Xh );
-    RHS_By = M_backend->newVector( Xh );
     RHS_Bz = M_backend->newVector( Xh );
 }
 
@@ -238,98 +231,87 @@ Maxwell_DG<Dim, Order_poly, Order_geo>::run()
 {
     this->init();
   
- 
     d_element_type Exn = Xh->element();
     d_element_type Eyn = Xh->element();
-    d_element_type Ezn = Xh->element();
-    d_element_type Bxn = Xh->element();
-    d_element_type Byn = Xh->element();
     d_element_type Bzn = Xh->element();
-    
-    d_element_type Ex_ex = Xh->element();
-    d_element_type Ey_ex = Xh->element();
-    d_element_type Ez_ex = Xh->element();
-    d_element_type Bx_ex = Xh->element();
-    d_element_type By_ex = Xh->element();
-    d_element_type Bz_ex = Xh->element();
-    
-    
-    
-    
-    auto dtExn =  Xh->element();
+   
+   d_element_type dtExn = Xh->element();
+    d_element_type dtEyn = Xh->element();
+    d_element_type dtBzn = Xh->element();
+		
     if( Dim == 2)
     {
-    double pi=M_PI;
-    double k=2*pi; //=0;
-    double theta=0.2;
-    double vu=cos( theta );
-    double vv=sin( theta );
-    auto c=cos( k * ( vu * Px() + vv * Py() - cst_ref( time ) ) + cst( pi/2.0 ) );
-    auto Ex_ex_expr = -vv*c;
-    auto Ey_ex_expr = vu*c;
-    auto Bz_ex_expr = c;
-    auto L2ProjDisc = opProjection( _domainSpace=Xh, _imageSpace=Xh, _type=L2 );
-        
-    
-
-    Ezn = L2ProjDisc->project( Ex_ex_expr );
-    Bxn = L2ProjDisc->project( Ey_ex_expr );
-    Byn = L2ProjDisc->project( Bz_ex_expr );
-
-    dt= 0.1*meshSize/( 2*Order_poly+1 );
-
-    this-> assemble_LHS();
-    
-    while (time <= Tfinal)
-    {
-    
-       //this->time_integrator(dt, Exn, Eyn, Ezn, Bxn, Byn, Bzn );
-        // exportResults(time, Exn, Eyn, Ezn, Bxn, Byn, Bzn );     
-                  
-    Ex_ex = L2ProjDisc->project( Ex_ex_expr );
-    Ey_ex = L2ProjDisc->project( Ey_ex_expr );
-    Bz_ex = L2ProjDisc->project( Bz_ex_expr );
-     
-    //this->exportResults(time, Exn, Eyn, Ezn, Bxn, Byn, Bzn );     
-    this->assemble_RHS(Ex_ex,Ey_ex,Ez_ex,Bx_ex,By_ex,Bz_ex,Exn, Eyn, Ezn, Bxn, Byn, Bzn);
-    this->solve(Exn, Eyn, Ezn, Bxn, Byn, Bzn);
-    Exn.add(dt, Exn);
-    Eyn.add(dt, Eyn);
-    Bzn.add(dt, Bzn);
-   
-    if ( exporter->doExport()){
-    LOG(INFO) << "exportResults done\n";
-    this->exportResults(time,Exn, Eyn, Ezn, Bxn, Byn, Bzn);
-    }
     
    
-    auto error = vf::project( _space=Xh, _expr=idv(Exn)-Ex_ex_expr);
-    double maxerror = error.linftyNorm();
- 
-        if ( Environment::worldComm().isMasterRank() ){
-         std::cout << "max error at time " << time  << " s :" << std::setprecision(16) << maxerror << "\n";
-         }
-        
-        time = time + dt;
-        
-        
+	double pi=M_PI;
+    
+    /*Declare here the exact solution, used for initialising fields
+	Duplicated code in assemble_RHS, should be refactorised
+	*/
+	
+	auto Ex_ex_expr = cst(0.);
+    auto Ey_ex_expr = cos( 6*pi*(Px() - cst_ref(time)));
+    auto Bz_ex_expr = cos( 6*pi*(Px() - cst_ref(time)));
+	
+	 auto L2ProjDisc = opProjection( _domainSpace=Xh, _imageSpace=Xh, _type=L2 );
+	 int counter=0;
+	 
+
+    dt= CFL*meshSize/( 2*Order_poly+1 );
+    time = 0;
+  
+
+   /*Init fields*/
+     Exn = L2ProjDisc->project( Ex_ex_expr );
+     Eyn = L2ProjDisc->project( Ey_ex_expr );
+     Bzn = L2ProjDisc->project( Bz_ex_expr );
+	 this->exportResults(time,Exn, Eyn, Bzn);
+
+	this-> assemble_LHS();
+	time = time +dt;  
+	while (time <= Tfinal){
+		counter++;
+		this->assemble_RHS(time, Exn, Eyn, Bzn);
+		this->solve(dtExn,dtEyn,dtBzn);
+		/*Explicit Euler Stage*/
+		Exn.add(dt, dtExn);
+		Eyn.add(dt, dtEyn);
+		Bzn.add(dt, dtBzn);
+		time=time+dt;
+		/*RK2 stage
+		Exn.add( dt/2.0, dtExn);
+		Eyn.add( dt/2.0, dtEyn);
+		Bzn.add( dt/2.0, dtBzn);
+		time=time + dt/2.0;
+		this->assemble_RHS(time, Exn, Eyn, Bzn);
+		this->solve(dtExn,dtEyn,dtBzn);
+		Exn.add( dt, dtExn);
+		Eyn.add( dt, dtEyn);
+		Bzn.add( dt, dtBzn);
+		time = time + dt/2.0;
+		*/
+  
+		if ( counter % 3 == 0 ){
+		this->exportResults(time,Exn, Eyn, Bzn);
+		}   
+		auto error = vf::project( _space=Xh, _expr=idv(Exn)-Ex_ex_expr);
+		double maxerror = error.linftyNorm();
+		double errorL2 = integrate( elements(mesh), (idv( Eyn )- Ey_ex_expr )*( idv( Eyn )-Ey_ex_expr ) ).evaluate()( 0, 0 );
+		if ( Environment::worldComm().isMasterRank() ){
+			/*Compute error L2 Linf*/
+			 std::cout << "time :"<< time << "s - ||u_error||_2 = " << math::sqrt( errorL2 ) << "\n";
+			 std::cout << "max error at time " << time  << " s :" << std::setprecision(16) << maxerror << "\n";
+			 }
     }
-
-
-    // this->assemble_RHS(Exn,  Eyn, Ezn, Bxn, Byn, Bzn);
-    // this->solve(Exn,  Eyn, Ezn, Bxn, Byn, Bzn);
-  } 
+	} 
 }
         
 template<int Dim,int Order_poly,int Order_geo>
 void 
-Maxwell_DG<Dim, Order_poly, Order_geo>::solve( d_element_type& dtExn,
-                                                                                      d_element_type& dtEyn,
-                                                                                      d_element_type& dtEzn,
-                                                                                      d_element_type& dtBxn,
-                                                                                      d_element_type& dtByn,
-                                                                                      d_element_type& dtBzn
-                                                                                      )
+Maxwell_DG<Dim, Order_poly, Order_geo>::solve(d_element_type& dtExn,
+																		  d_element_type& dtEyn,
+																		  d_element_type& dtBzn
+																		  )
 {
         timers["solve"].first.restart();
         LOG(INFO) << "[solve] :: Start solving \n";
@@ -345,7 +327,6 @@ Maxwell_DG<Dim, Order_poly, Order_geo>::solve( d_element_type& dtExn,
     }
 }
 }
-                                                                                          
 
 template<int Dim,int Order_poly,int Order_geo>
 void 
@@ -363,110 +344,238 @@ Maxwell_DG<Dim, Order_poly, Order_geo>::assemble_LHS()
     {
          std::cout<< "[assemble LHS] :: Assemblage Done in " << timers["LHS"].first.elapsed() << "s\n";
     }
+	
+	/*Matlab output, crash if matrix size is too big
+	D->printMatlab("mass.m");
+	*/
 }
+
+
+/*Compute the RHS*/
 
 
 template<int Dim,int Order_poly,int Order_geo>
 void 
-Maxwell_DG<Dim, Order_poly, Order_geo>::assemble_RHS(                
-                                                                                                        d_element_type& Ex_ex,
-                                                                                                        d_element_type& Ey_ex,
-                                                                                                        d_element_type& Ez_ex,
-                                                                                                        d_element_type& Bx_ex,
-                                                                                                        d_element_type& By_ex,
-                                                                                                        d_element_type& Bz_ex,
+Maxwell_DG<Dim, Order_poly, Order_geo>::assemble_RHS(                double time,
                                                                                                         d_element_type& Exn,
                                                                                                         d_element_type& Eyn,
-                                                                                                        d_element_type& Ezn,
-                                                                                                        d_element_type& Bxn,
-                                                                                                        d_element_type& Byn,
                                                                                                         d_element_type& Bzn
                                                                                                       )
 {    
+
+	LOG(INFO) << "[assemble_RHS] :: Starting \n";
+    timers["RHS"].first.restart();
+
  if ( Dim == 2 )
     {
-    auto w = vec( idv( Exn ),idv( Eyn ),idv( Bzn ) );
-    auto wex= vec( idv( Ex_ex ),idv( Ey_ex ),idv( Bz_ex ) );
-    auto wR = vec( rightfacev( idv( Exn ) ),rightfacev( idv( Eyn ) ),rightfacev( idv( Bzn ) ) );
+	 /*
+	 Define here the exact solution used in boundary condition
+	 Should be refactorized 'coz of duplicated code in initialisation
+	 */
+	 
+	double pi=M_PI;
+	auto Ex_ex_expr = cst(0.);
+    auto Ey_ex_expr = cos( 6*pi*(Px() - cst_ref(time)));
+    auto Bz_ex_expr = cos( 6*pi*(Px() - cst_ref(time)));
+	
+	/*
+	Another exact solution
+	Bias 2D plane wave parameter theta
+	
+	double k=2*pi; //=0;
+    double theta=0.2;
+    double vu=cos( theta );
+    double vv=sin( theta );
+    auto c=cos( k * ( vu * Px() + vv * Py() - cst_ref( time ) ) + cst( pi/2.0 ) );
+    auto Ex_ex_expr = -vv*c;
+    auto Ey_ex_expr = vu*c;
+    auto Bz_ex_expr = c;
+	 
+	*/
+	/*
+	Another exact solution
+	2D n,m mode Cavity exact solution
+    double c=1.;
+	double omega=1;
+	double n=1,m=1;
+    auto Ex_ex_expr = -cst(c*c*( n*pi*omega ))*cos( m*pi*Px() )*sin( n*pi*Py() )*sin( omega*cst(time) );
+	auto Ey_ex_expr =  cst(c*c*( m*pi/omega ))*sin( m*pi*Px() )*cos( n*pi*Py() )*sin( omega*cst(time) );
+	auto Bz_ex_expr =  cos( m*pi*Px() )*cos( n*pi*Py() )*cos( omega*cst(time) );
+	*/
+				 
+	auto lf_Ex=form1( _test=Xh, _vector=RHS_Ex,_init=true );
+    auto lf_Ey=form1( _test=Xh, _vector=RHS_Ey,_init=true );
+    auto lf_Bz=form1( _test=Xh, _vector=RHS_Bz,_init=true );
+	
+	/*Test function*/
+	auto v = Xh->element();
 
+	/*Stiffness part*/
+	lf_Ex=integrate(_range=elements(mesh),_expr= id(v)*dyv(Bzn));
+    lf_Ey=integrate(_range=elements(mesh),_expr=-id(v)*dxv(Bzn));
+    lf_Bz=integrate(_range=elements(mesh),_expr=-id(v)*dxv(Eyn)+id(v)*dyv(Exn));
+
+    /*	Define Right and Left value */
+	auto wR = vec( rightfacev( idv( Exn ) ),rightfacev( idv( Eyn ) ),rightfacev( idv( Bzn ) ) );
     auto wL = vec( leftfacev( idv( Exn ) ),leftfacev( idv( Eyn ) ),leftfacev( idv( Bzn ) ) );
-    //On fait rebondir le flux
-    //SIGMA W_L
-    auto wMetal = vec( -leftfacev( idv( Exn ) ),-leftfacev( idv( Eyn ) ),leftfacev( idv( Bzn ) ) );
-    auto wSivlerM= vec( leftfacev( idv( Exn ) ),-leftfacev( idv( Eyn ) ),-leftfacev( idv( Bzn ) ) );
-      // FLux matrix GHOST CELL
-    auto Anp_1 = vec( 0.5*Ny()*Ny(), -0.5*Nx()*Ny(), -0.5*Ny() );
+	
+    /* Upwind Flux : 	Matrices Aini(+) and Aini(-)  for upwind flux 	*/
+	auto Anp_1 = vec( 0.5*Ny()*Ny(), -0.5*Nx()*Ny(), -0.5*Ny() );
     auto Anp_2 = vec( -0.5*Nx()*Ny(), 0.5*Nx()*Nx(), 0.5*Nx() );
     auto Anp_3 = vec( -0.5*Ny(), 0.5*Nx(), cst(0.5) );
     auto Anm_1 = vec( -0.5*Ny()*Ny(), 0.5*Nx()*Ny(),-0.5*Ny() );
     auto Anm_2 = vec( 0.5*Nx()*Ny(), -0.5*Nx()*Nx(), 0.5*Nx() );
     auto Anm_3 = vec( -0.5*Ny(), 0.5*Nx(), cst(-0.5) );
-    auto v = Xh->element();
-         
-    auto lf_Ex=form1( _test=Xh, _vector=RHS_Ex );
-    auto lf_Ey=form1( _test=Xh, _vector=RHS_Ey );
-    // auto lf_Ez=form1( _test=Xh, _vector=RHS_Ez );
-    // auto lf_Bx=form1( _test=Xh, _vector=RHS_Bx );
-    // auto lf_By=form1( _test=Xh, _vector=RHS_By );
-    auto lf_Bz=form1( _test=Xh, _vector=RHS_Bz );
-     
-    LOG(INFO) << "[assemble_RHS] :: Starting \n";
-    timers["RHS"].first.restart();
-    
-    
-    
-    //First Term Decentred flux should be ok
-    lf_Ex = integrate(  _range=elements( mesh ), 
-    _expr=+id( v )*dyv( Bzn ) );
+		
+	
+	lf_Ex +=integrate(_range=internalfaces(mesh),_expr=( trans(Anm_1)*(wL-wR))*leftface(id(v) )
+																			   + ( trans(Anp_1)*(wL-wR))*rightface(id(v) ) );
+	
+	lf_Ey +=integrate(_range=internalfaces(mesh),_expr=( trans(Anm_2)*(wL-wR))*leftface(id(v) )
+																			   + ( trans(Anp_2)*(wL-wR))*rightface(id(v) ) );
+	
+	
+	lf_Bz +=integrate(_range=internalfaces(mesh),_expr=( trans(Anm_3)*(wL-wR))*leftface(id(v) )
+																			   + ( trans(Anp_3)*(wL-wR))*rightface(id(v) ) );
+	
+	
+	
+	/* Boundary flux : Imposed weakly using ghost state wL*/
+	auto wex=vec(Ex_ex_expr,Ey_ex_expr,Bz_ex_expr);
+    auto wMetal = vec( -leftfacev( idv( Exn ) ),-leftfacev( idv( Eyn ) ),leftfacev( idv( Bzn ) ) );
+    // auto wSivlerM= vec( leftfacev( idv( Exn ) ),-leftfacev( idv( Eyn ) ),-leftfacev( idv( Bzn ) ) );
+	
+	lf_Ex += integrate(markedfaces( mesh, "Dirichlet" ),trans(Anm_1)*(wL-wex)*id(v) );
+	lf_Ey += integrate(markedfaces( mesh, "Dirichlet" ),trans(Anm_2)*(wL-wex)*id(v) );
+	lf_Bz += integrate(markedfaces( mesh, "Dirichlet" ),trans(Anm_3)*(wL-wex)*id(v) );
+	
+	lf_Ex += integrate(markedfaces( mesh, "Metal" ),trans(Anm_1)*(wL-wMetal)*id(v) );
+	lf_Ey += integrate(markedfaces( mesh, "Metal" ),trans(Anm_2)*(wL-wMetal)*id(v) );
+	lf_Bz += integrate(markedfaces( mesh, "Metal" ),trans(Anm_3)*(wL-wMetal)*id(v) );
 
-    lf_Ey = integrate( _range=elements( mesh ),  
-    _expr=+id( v )*dxv( Bzn ) ); //sign change - -> +
-
-    lf_Bz = integrate(_range=elements( mesh ), 
-    _expr=-id( v )*dxv( Eyn ) + id( v )*dyv( Exn ) );
-    
-    LOG(INFO) << "[assemble_RHS] :: TM MODE - First RHS Term done \n";
-    
-    //Second term Decentred Flux
-    lf_Ex += integrate( _range=internalfaces( mesh ),
-    _expr= ( trans( Anm_1 )*( wL-wR ) )*leftface( id( v ) )
-    + ( trans( Anp_1  )*( wL-wR ) )*rightface( id( v ) ) );
-
-    lf_Ey += integrate( _range=internalfaces( mesh ),
-    _expr= ( trans( Anm_2 )*( wL-wR ) )*leftface( id( v ) )
-    + ( trans( Anp_2 )*( wL-wR ) )*rightface( id( v ) ) );
-
-    lf_Bz += integrate( _range=internalfaces( mesh ),
-    _expr= ( trans( Anm_3 )*( wL-wR ) )*leftface( id( v ) ) 
-    + ( trans( Anp_3 )*( wL-wR ) )*rightface( id( v ) ) );    
-
-    LOG(INFO) << "[assemble_RHS] :: TM MODE - Second RHS Term done \n";
-    
-    lf_Ex += integrate(  _range=markedfaces( mesh, "Metal" ), 
-    _expr=( trans( Anm_1 )*( wL-wMetal ) )*leftface( id( v ) ) );
-    
-    lf_Ey += integrate( _range=markedfaces( mesh, "Metal" ),   
-    _expr=( trans( Anm_2 )*( wL-wMetal ) )*leftface( id( v ) ) );                                    
-          
-    lf_Bz += integrate( _range=markedfaces( mesh, "Metal" ), 
-    _expr=( trans( Anm_3 )*( wL-wMetal ) )*leftface( id( v ) ) );
-
-    LOG(INFO) << "[assemble_RHS] :: TM MODE - Metalic Boundary RHS Term done \n";
-    
-    
-    //TCHECK IF GOOD.
-    lf_Ex += integrate( _range=markedfaces( mesh, "Dirichlet" ), 
-    _expr=-( trans( Anm_1 )*( wL-wex ) )*leftface( id( v ) ));
-
-    lf_Ey += integrate(_range=markedfaces( mesh, "Dirichlet" ), 
-    _expr=-( trans( Anm_2 )*( wL-wex ) )*leftface( id( v ) ) );
-
-    lf_Bz += integrate(_range=markedfaces( mesh, "Dirichlet" ), 
-    _expr=-( trans( Anm_3 )*( wL-wex ) )*leftface( id( v ) ) );                               
-                                    
-    LOG(INFO) << "[assemble_RHS] :: TM MODE - Dirichlet Boundary RHS Term done \n";
-        
+	
+	/* Centered Flux	
+	auto Aini_1 = vec(cst(0.), cst(0.),-Ny() );
+	auto Aini_2 = vec(cst(0.), cst(0.), Nx() );
+	auto Aini_3 = vec(-Ny() , Nx() ,cst(0.) );
+	
+	lf_Ex+=integrate( _range=internalfaces(mesh),_expr=0.5*(trans(Aini_1)*(wL*(leftface(id(v)) - wR*rightface(id(v))))));
+	lf_Ey+=integrate( _range=internalfaces(mesh),_expr=0.5*(trans(Aini_2)*(wL*(leftface(id(v)) - wR*rightface(id(v))))));
+	lf_Bz+=integrate( _range=internalfaces(mesh),_expr=0.5*(trans(Aini_3)*(wL*(leftface(id(v)) - wR*rightface(id(v))))));
+	*/
+	
+	/* Rusanov fux :  Here Lmax denotes the max velocity of waves, physicaly the speed. Matrices Aini are re-used.
+	lf_Ex+=integrate( _range=internalfaces(mesh),_expr=0.5*(trans(Aini_1)*(wL*(leftface(id(v)) - wR*rightface(id(v))))) - lmax*0.5*(trans(Aini_1)*(wL*(leftface(id(v)) - wR*rightface(id(v))))));
+	lf_Ey+=integrate( _range=internalfaces(mesh),_expr=0.5*(trans(Aini_2)*(wL*(leftface(id(v)) - wR*rightface(id(v))))) - lmax*0.5*(trans(Aini_2)*(wL*(leftface(id(v)) - wR*rightface(id(v))))));
+	lf_Bz+=integrate( _range=internalfaces(mesh),_expr=0.5*(trans(Aini_3)*(wL*(leftface(id(v)) - wR*rightface(id(v))))) - lmax*0.5*(trans(Aini_3)*(wL*(leftface(id(v)) - wR*rightface(id(v))))));
+	*/
+	}
+   
+ 
+	/*
+	This part is the begining of the 3D extension
+	
+	/_!_\ Actually vec() function is NOT overloaded for 6th component !! DO NOT WORK
+		
+	if ( Dim == 3 )
+    {
+  
+   TODO : Expres the stiffness part 
+   
+   
+   	auto wR  = vec( rightfacev( idv( Exn ) ), rightfacev( idv( Eyn ) ), rightfacev( idv( Ezn ) ), rightfacev( idv( Bxn ) ), rightfacev( idv( Byn ) ), rightfacev( idv( Bzn ) ) );
+    auto wL  = vec( leftfacev( idv( Exn ) ), leftfacev( idv( Eyn ) ), leftfacev( idv( Ezn ) ), leftfacev( idv( Bxn ) ), leftfacev( idv( Byn ) ), leftfacev( idv( Bzn ) ) );
+      
+   Updwind Flux Matrices Aini(+) and Aini(-)
+ 
+	auto Anp_1_3D = vec(  0.5*(Ny()*Ny()+Nz()*Nz()) , -0.5*Nx()*Ny(), -0.5*Ny()*Nz(), 0, 0.5*Nz(), -0.5*Nz() );
+    auto Anp_2_3D = vec( -0.5*Nx()*Ny(), 0.5*(Nx()*Nx()+ Nz()*Nz()), -0.5*Ny()*Nz(), -0.5*Nz(),0,0.5*Nx() );
+	auto Anp_3_3D = vec(-0.5*Nx()*Nz(), -0.5*Ny()*Nz(), 0.5*(Ny()*Ny()+Nx()*Nx() ),0.5*Ny(),-0.5*Nx(),0);
+	auto Anp_4_3D = vec(0, -0.5*Nz(), 0.5*Ny(), 0.5*(Ny()*Ny()+Nz()*Nz() ),-0.5*Nx()*Ny(),-0.5*Nx()*Nz());
+	auto Anp_5_3D = vec(0.5*Nz(), 0, -0.5*Nx(),-0.5*Nx()*Ny(),0.5*(Nx()*Nx()+Nz()*Nz() ),-0.5*Ny()*Nz());
+	auto Anp_6_3D = vec(-0.5*Ny(), -0.5*Nx(), 0,-0.5*Nx()*Nz(),-0.5*Ny()*Nz(),-0.5*(Ny()*Ny()+Nx()*Nx() ));
+      
+	auto Anm_1_3D = vec( -0.5*(Ny()*Ny()+Nz()*Nz()) , 0.5*Nx()*Ny(), 0.5*Ny()*Nz(), 0, 0.5*Nz(), -0.5*Nz() );
+    auto Anm_2_3D = vec( 0.5*Nx()*Ny(), -0.5*(Nx()*Nx()+ Nz()*Nz()), 0.5*Ny()*Nz(), 0.5*Nz(),0,0.5*Nx() );
+	auto Anm_3_3D = vec(0.5*Nx()*Nz(), 0.5*Ny()*Nz(), -0.5*(Ny()*Ny()+Nx()*Nx() ),0.5*Ny(),-0.5*Nx(),0);
+	auto Anm_4_3D = vec(0, -0.5*Nz(), 0.5*Ny(), -0.5*(Ny()*Ny()+Nz()*Nz() ),0.5*Nx()*Ny(),0.5*Nx()*Nz());
+	auto Anm_5_3D = vec(0.5*Nz(), 0, -0.5*Nx(),0.5*Nx()*Ny(), -0.5*(Nx()*Nx()+Nz()*Nz() ),0.5*Ny()*Nz());
+	auto Anm_6_3D = vec(-0.5*Ny(), -0.5*Nx(), 0,0.5*Nx()*Nz(),0.5*Ny()*Nz(),0.5*(Ny()*Ny()+Nx()*Nx() )); 
+	
+		
+	lf_Ex +=integrate(_range=internalfaces(mesh),_expr=( trans(Anm_1)*(wL-wR))*leftface(id(v) )
+																			   + ( trans(Anp_1)*(wL-wR))*rightface(id(v) ) );
+	
+	lf_Ey +=integrate(_range=internalfaces(mesh),_expr=( trans(Anm_2)*(wL-wR))*leftface(id(v) )
+																			   + ( trans(Anp_2)*(wL-wR))*rightface(id(v) ) );
+	
+	
+	lf_Ez +=integrate(_range=internalfaces(mesh),_expr=( trans(Anm_3)*(wL-wR))*leftface(id(v) )
+																			   + ( trans(Anp_3)*(wL-wR))*rightface(id(v) ) );
+	
+	
+	
+	lf_Bx +=integrate(_range=internalfaces(mesh),_expr=( trans(Anm_4)*(wL-wR))*leftface(id(v) )
+																			   + ( trans(Anp_4)*(wL-wR))*rightface(id(v) ) );
+	
+	lf_By +=integrate(_range=internalfaces(mesh),_expr=( trans(Anm_5)*(wL-wR))*leftface(id(v) )
+																			   + ( trans(Anp_5)*(wL-wR))*rightface(id(v) ) );
+	
+	
+	lf_Bz +=integrate(_range=internalfaces(mesh),_expr=( trans(Anm_6)*(wL-wR))*leftface(id(v) )
+																			   + ( trans(Anp_6)*(wL-wR))*rightface(id(v) ) );
+	
+	
+		
+	Centered Flux
+	
+	auto Aini_1 = vec(cst(0.), cst(0.), cst(0.), cst(0.), Nz(), -Ny() );
+	auto Aini_2 = vec(cst(0.), cst(0.), cst(0.), -Nz(), cst(0.), Nx() );
+	auto Aini_3 = vec(cst(0.), cst(0.), cst(0.), Ny(), -Nx(), cst(0.) );
+	auto Aini_4 = vec(cst(0.), -Nz(), Ny(), cst(0.), cst(0.), cst(0.) );
+	auto Aini_5 = vec(Nz(), cst(0.), -Nx(), cst(0.), cst(0.), cst(0.) );
+	auto Aini_6 = vec(-Ny(), Nx(), cst(0.), cst(0.), cst(0.), cst(0.) );
+	
+	
+	lf_Ex+=integrate( _range=internalfaces(mesh),_expr=0.5*(trans(Aini_1)*(wL*(leftface(id(v)) - wR*rightface(id(v))))));
+	lf_Ey+=integrate( _range=internalfaces(mesh),_expr=0.5*(trans(Aini_2)*(wL*(leftface(id(v)) - wR*rightface(id(v))))));
+	lf_Ez+=integrate( _range=internalfaces(mesh),_expr=0.5*(trans(Aini_3)*(wL*(leftface(id(v)) - wR*rightface(id(v))))));
+	lf_Bx+=integrate( _range=internalfaces(mesh),_expr=0.5*(trans(Aini_4)*(wL*(leftface(id(v)) - wR*rightface(id(v))))));
+	lf_By+=integrate( _range=internalfaces(mesh),_expr=0.5*(trans(Aini_5)*(wL*(leftface(id(v)) - wR*rightface(id(v))))));
+	lf_Bz+=integrate( _range=internalfaces(mesh),_expr=0.5*(trans(Aini_6)*(wL*(leftface(id(v)) - wR*rightface(id(v))))));
+	
+	
+	Rusanov fux :  Here Lmax denotes the max velocity of waves, physicaly the speed of light in medium. Matrices Aini are re-used.
+	lf_Ex+=integrate( _range=internalfaces(mesh),_expr=0.5*(trans(Aini_1)*(wL*(leftface(id(v)) - wR*rightface(id(v))))) - lmax*0.5*(trans(Aini_1)*(wL*(leftface(id(v)) - wR*rightface(id(v))))));
+	lf_Ey+=integrate( _range=internalfaces(mesh),_expr=0.5*(trans(Aini_2)*(wL*(leftface(id(v)) - wR*rightface(id(v))))) - lmax*0.5*(trans(Aini_2)*(wL*(leftface(id(v)) - wR*rightface(id(v))))));
+	lf_Ez+=integrate( _range=internalfaces(mesh),_expr=0.5*(trans(Aini_3)*(wL*(leftface(id(v)) - wR*rightface(id(v))))) - lmax*0.5*(trans(Aini_3)*(wL*(leftface(id(v)) - wR*rightface(id(v))))));
+	lf_Bx+=integrate( _range=internalfaces(mesh),_expr=0.5*(trans(Aini_4)*(wL*(leftface(id(v)) - wR*rightface(id(v))))) - lmax*0.5*(trans(Aini_4)*(wL*(leftface(id(v)) - wR*rightface(id(v))))));
+	lf_By+=integrate( _range=internalfaces(mesh),_expr=0.5*(trans(Aini_5)*(wL*(leftface(id(v)) - wR*rightface(id(v))))) - lmax*0.5*(trans(Aini_5)*(wL*(leftface(id(v)) - wR*rightface(id(v))))));
+	lf_Bz+=integrate( _range=internalfaces(mesh),_expr=0.5*(trans(Aini_6)*(wL*(leftface(id(v)) - wR*rightface(id(v))))) - lmax*0.5*(trans(Aini_6)*(wL*(leftface(id(v)) - wR*rightface(id(v))))));
+			
+	
+	
+	Boundary flux : Imposed weakly using ghost state wL
+	auto wex = vec(Ex_ex_expr, Ey_ex_expr, Ez_ex_expr, Bx_ex_expr, By_ex_expr, Bz_ex_expr);
+   
+   TO DO : Express the wMetal and Silver Muller
+    auto wMetal = ;
+	
+	lf_Ex += integrate(markedfaces( mesh, "Dirichlet" ),trans(Anm_1)*(wL-wex)*id(v) );
+	lf_Ey += integrate(markedfaces( mesh, "Dirichlet" ),trans(Anm_2)*(wL-wex)*id(v) );
+	lf_Ez += integrate(markedfaces( mesh, "Dirichlet" ),trans(Anm_3)*(wL-wex)*id(v) );
+	lf_Bx += integrate(markedfaces( mesh, "Dirichlet" ),trans(Anm_4)*(wL-wex)*id(v) );
+	lf_By += integrate(markedfaces( mesh, "Dirichlet" ),trans(Anm_5)*(wL-wex)*id(v) );
+	lf_Bz += integrate(markedfaces( mesh, "Dirichlet" ),trans(Anm_6)*(wL-wex)*id(v) );
+	
+	lf_Ex += integrate(markedfaces( mesh, "Metal" ),trans(Anm_1)*(wL-wMetal)*id(v) );
+	lf_Ey += integrate(markedfaces( mesh, "Metal" ),trans(Anm_2)*(wL-wMetal)*id(v) );
+	lf_Ez += integrate(markedfaces( mesh, "Metal" ),trans(Anm_3)*(wL-wMetal)*id(v) );
+	lf_Bx += integrate(markedfaces( mesh, "Metal" ),trans(Anm_4)*(wL-wMetal)*id(v) );
+	lf_By += integrate(markedfaces( mesh, "Metal" ),trans(Anm_5)*(wL-wMetal)*id(v) );
+	lf_Bx += integrate(markedfaces( mesh, "Metal" ),trans(Anm_6)*(wL-wMetal)*id(v) );
    }
+*/
     if ( Environment::worldComm().isMasterRank() )
     {
         std::cout << "[assemble_RHS] :: Completed \n";
@@ -474,14 +583,14 @@ Maxwell_DG<Dim, Order_poly, Order_geo>::assemble_RHS(
 } 
 
 
+/*
+Time integrator function, Actually not used
+*/
 template<int Dim,int Order_poly,int Order_geo>
 void 
 Maxwell_DG<Dim, Order_poly, Order_geo>::time_integrator(double dt, 
                                                                     d_element_type& Exn,
                                                                     d_element_type& Eyn,
-                                                                    d_element_type& Ezn,
-                                                                    d_element_type& Bxn,
-                                                                    d_element_type& Byn,
                                                                     d_element_type& Bzn
                                                                   )
                                                                   
@@ -489,154 +598,110 @@ Maxwell_DG<Dim, Order_poly, Order_geo>::time_integrator(double dt,
 
     d_element_type Exk = Xh->element();
     d_element_type Eyk = Xh->element();
-    d_element_type Ezk = Xh->element();
-    d_element_type Bxk = Xh->element();
-    d_element_type Byk = Xh->element();
     d_element_type Bzk = Xh->element();
 
-    assemble_RHS(Exn, Eyn, Ezn, Bxn, Byn, Bzn);
-    solve(Exn, Eyn, Ezn, Bxn, Byn, Bzn);
+    assemble_RHS(Exn, Eyn,  Bzn);
+    solve(Exn, Eyn, Bzn);
 
     Exn.add(dt, Exn);
     Eyn.add(dt, Eyn);
     Bzn.add(dt, Bzn);
     
-    }
-    
-    
-    
-    
-    /*
-    //Ex,Ey ,etc... stockent le stage 1
-
+     
+    /*3D RK4 Stage WARNING UNTESTED
     Exk=Exn;
     Eyk=Eyn;
-    // Ezk=Ezn;
-    // Bxk=Bxn;
-    // Byk=Byn;
+    Ezk=Ezn;
+    Bxk=Bxn;
+    Byk=Byn;
     Bzk=Bzn;
      
-     //On actualise EX au fur et a mesure
     Exn.add( dt/6.0, Exn );
     Eyn.add( dt/6.0, Eyn ); 
-    // Ezn.add( dt/6.0, Ezn ); 
-    // Bxn.add( dt/6.0, Bxn );
-    // Byn.add( dt/6.0, Byn ); 
+    Ezn.add( dt/6.0, Ezn ); 
+    Bxn.add( dt/6.0, Bxn );
+    Byn.add( dt/6.0, Byn ); 
     Bzn.add( dt/6.0, Bzn ); 
 
     Exk.add( dt/2.0, Exk );
     Eyk.add( dt/2.0, Eyk ); 
-    // Ezk.add( dt/2.0, Ezk );  
-    // Bxk.add( dt/2.0, Bxk );
-    // Byk.add( dt/2.0, Byk ); 
+    Ezk.add( dt/2.0, Ezk );  
+    Bxk.add( dt/2.0, Bxk );
+    Byk.add( dt/2.0, Byk ); 
     Bzk.add( dt/2.0, Bzk ); 
 
     assemble_RHS(Exk,  Eyk, Ezk, Bxk, Byk, Bzk);
     solve(Exk,  Eyk, Ezk, Bxk, Byk, Bzk);
-
-    //Exk,Eyk ,etc... stockent le stage 2
-    
+  
     Exn.add( dt/3.0, Exk );
     Eyn.add( dt/3.0, Eyk ); 
-    // Ezn.add( dt/3.0, Ezk ); 
-    // Bxn.add( dt/3.0, Bxk );
-    // Byn.add( dt/3.0, Byk ); 
+    Ezn.add( dt/3.0, Ezk ); 
+    Bxn.add( dt/3.0, Bxk );
+    Byn.add( dt/3.0, Byk ); 
     Bzn.add( dt/3.0, Bzk ); 
 
     Exk.add( dt/2.0, Exk );
     Eyk.add( dt/2.0, Eyk ); 
-    // Ezk.add( dt/2.0, Ezk );  
-    // Bxk.add( dt/2.0, Bxk );
-    // Byk.add( dt/2.0, Byk ); 
+    Ezk.add( dt/2.0, Ezk );  
+    Bxk.add( dt/2.0, Bxk );
+    Byk.add( dt/2.0, Byk ); 
     Bzk.add( dt/2.0, Bzk ); 
 
     assemble_RHS(Exk,  Eyk, Ezk, Bxk, Byk, Bzk);
     solve(Exk,  Eyk, Ezk, Bxk, Byk, Bzk);  
-    //Exk,Eyk ,etc... stockent le stage 3
+
 
     Exn.add( dt/3.0, Exk );
     Eyn.add( dt/3.0, Eyk ); 
-    // Ezn.add( dt/3.0, Ezk ); 
-    // Bxn.add( dt/3.0, Bxk );
-    // Byn.add( dt/3.0, Byk ); 
+    Ezn.add( dt/3.0, Ezk ); 
+    Bxn.add( dt/3.0, Bxk );
+    Byn.add( dt/3.0, Byk ); 
     Bzn.add( dt/3.0, Bzk );   
 
     Exk.add( dt, Exk );
     Eyk.add( dt, Eyk ); 
-    // Ezk.add( dt, Ezk );  
-    // Bxk.add( dt, Bxk );
-    // Byk.add( dt, Byk ); 
+    Ezk.add( dt, Ezk );  
+    Bxk.add( dt, Bxk );
+    Byk.add( dt, Byk ); 
     Bzk.add( dt, Bzk );  
 
     assemble_RHS(Exk,  Eyk, Ezk, Bxk, Byk, Bzk);
     solve(Exk,  Eyk, Ezk, Bxk, Byk, Bzk);    
-    //Exk,Eyk ,etc... stockent le stage 4
+
 
     Exn.add( dt/6.0, Exk );
     Eyn.add( dt/6.0, Eyk ); 
-    // Ezn.add( dt/6.0, Ezk ); 
-    // Bxn.add( dt/6.0, Bxk );
-    // Byn.add( dt/6.0, Byk ); 
+    Ezn.add( dt/6.0, Ezk ); 
+    Bxn.add( dt/6.0, Bxk );
+    Byn.add( dt/6.0, Byk ); 
     Bzn.add( dt/6.0, Bzk ); 
-
-}
 */
 
+}
+
+
+/*Exporter function*/
 
 template<int Dim,int Order_poly,int Order_geo>
 void 
 Maxwell_DG<Dim, Order_poly, Order_geo>::exportResults(double time, 
                                                                     d_element_type& Exn,
                                                                     d_element_type& Eyn,
-                                                                    d_element_type& Ezn,
-                                                                    d_element_type& Bxn,
-                                                                    d_element_type& Byn,
                                                                     d_element_type& Bzn
                                                                   )
 {
     auto L2ProjCon = opProjection( _domainSpace=Ch, _imageSpace=Ch, _type=L2 );
-    
-    
-    exporter->step( time )->setMesh( mesh );
-    
-    c_element_type Exc = Ch->element();
-    c_element_type Eyc = Ch->element();
-    c_element_type Bzc = Ch->element();
-       
-    Exc = L2ProjCon->project( idv( Exn ) );
-    Eyc = L2ProjCon->project( idv( Eyn ) );
-    Bzc = L2ProjCon->project( idv( Bzn ) );
-    
-    if(Dim==2){
-    exporter->step( time )->add( "Ex", Exc );
-    exporter->step( time )->add( "Ey", Eyc );
-    exporter->step( time )->add( "Bz", Bzc );
-    exporter->save();
+
+    if ( exporter->doExport()){
+        exporter->step( time )->setMesh( mesh );
+       if(Dim==2){
+        exporter->step( time )->add( "Ex", L2ProjCon->project( idv( Exn ) ) );
+        exporter->step( time )->add( "Ey", L2ProjCon->project( idv( Eyn ) ) );
+        exporter->step( time )->add( "Bz", L2ProjCon->project( idv( Bzn ) ) );
+       }
+
+        exporter->save();
+        LOG(INFO) << "exportResults done\n";
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 #endif /* __Maxwell_DG_H */
-
-

@@ -38,10 +38,11 @@ makeOptions()
 {
     po::options_description maxwell_options( "Maxwell_DG options" );
     maxwell_options.add_options()
-    ( "hsize", po::value<double>()->default_value( 0.1 ), "mesh size" )
-    ("shape", Feel::po::value<std::string>()->default_value( "hypercube" ), "shape of the domain (either simplex or hypercube)")
+    ( "hsize", po::value<double>()->default_value( 0.25 ), "mesh size" )
+    ( "CFL", po::value<double>()->default_value( 0.1 ), "CFL" )
+    ("shape", Feel::po::value<std::string>()->default_value( "simplex" ), "shape of the domain (either simplex or hypercube)")
     ( "Tfinal", po::value<double>()->default_value( 1 ), "final time" )
-    ( "gmsh.filename", po::value<std::string>()->default_value("diode-simplex.geo"), "geo filename" )
+    ( "gmsh.filename", po::value<std::string>()->default_value("circle2.geo"), "geo filename" )
     ( "t_m", po::value<int>()->default_value( 0 ), "Euler(=0), RK4(=1) method" )
     ;
     return maxwell_options.add( Feel::feel_options() );
@@ -53,9 +54,9 @@ makeAbout()
     AboutData about( "Maxwell_DG",
                                 "diode",
                                 "0.2", 			
-                                "Resolve 2D Maxwell equation with Discontinuous Galerkine",
+                                "Resolve 2D Maxwell equation with Discontinuous Galerkin",
                                 AboutData::License_GPL ,	
-                                "Copyright (c) 2014 Université de Strasbourg" );
+                                "Copyright (c) 2014 Universite de Strasbourg" );
 
     about.addAuthor( "Christophe Prud'homme","Maintainer","prudhomme@unistra.fr" ,"" );
     about.addAuthor( "Philippe Helluy", "Developer", "helluy@math.unistra.fr", "" );
@@ -79,6 +80,6 @@ using namespace Feel;
     LOG(INFO) << app.optionsDescription() << "\n";
     return 0;
     }
-    app.add( new Maxwell_DG<2,1,1>() );
+    app.add( new Maxwell_DG<2,2,1>() );
     app.run();
 }
