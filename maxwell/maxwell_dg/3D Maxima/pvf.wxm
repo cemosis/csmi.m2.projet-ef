@@ -1,0 +1,77 @@
+/* [wxMaxima batch file version 1] [ DO NOT EDIT BY HAND! ]*/
+/* [ Created with wxMaxima version 14.12.1 ] */
+
+/* [wxMaxima: input   start ] */
+Aini: matrix(
+ [0,0,-n2], 
+ [0,0,n1], 
+ [-n2,n1,0]
+);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+eigenvalues(%);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+eigenvectors(%);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+eigenvectors(Aini: matrix(
+ [0,0,-n2], 
+ [0,0,n1], 
+ [-n2,n1,0]
+));
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+P:matrix(
+ [-n2,n1,-n2], 
+ [n1,n2,n1], 
+ [-r,0,r]
+);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+invert(%);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+ratsimp(%);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+Pm1:(1/(2*r*r))*matrix(
+ [-n2,n1,-r], 
+ [2*n1,2*n2,0], 
+ [-n2,n1,r]
+);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+Dm: matrix(
+ [-r,0,0], 
+ [0,0,0], 
+ [0,0,0]
+);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+P.Dm.Pm1;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+Dp: matrix(
+ [0,0,0], 
+ [0,0,0], 
+ [0,0,r]
+);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+P.Dp.Pm1;
+/* [wxMaxima: input   end   ] */
+
+/* Maxima can't load/batch files which end with a comment! */
+"Created with wxMaxima"$
