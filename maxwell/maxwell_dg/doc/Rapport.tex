@@ -1,4 +1,8 @@
 \documentclass[a4paper,oneside,10pt]{report}
+
+
+
+
 \usepackage[utf8]{inputenc}
 \usepackage[francais]{babel}
 \usepackage{fancyhdr}
@@ -11,16 +15,61 @@
 \usepackage{xcolor}
 \usepackage{listings}
 \usepackage{caption}
+\usepackage{colortbl,booktabs}
 \usepackage[caption=false]{subfig} 
 \usepackage{graphicx}
 \usepackage{capt-of}
 \usepackage{amsmath,amssymb,amsfonts}
-\usepackage{amsthm}
 \usepackage{float}
+\usepackage{pgfplots,pgfplotstable}
+\usepackage{xspace}
+\usepackage{tikz}
+\usepackage{gantt}
+
+
+\definecolor{lbcolor}{rgb}{0.95,0.95,0.95}
+\definecolor{cblue}{rgb}{0.,0.0,0.6}
+\definecolor{lblue}{rgb}{0.1,0.1,0.4}
+\definecolor{ljk}{rgb}{0.50, 0.625, 0.70}
+\definecolor{creme}{RGB}{253, 241, 184}
+
+\definecolor{orange}{RGB}{255, 127, 0}
+\definecolor{orangef}{RGB}{204, 85, 0}
+\definecolor{vert}{RGB}{22, 184, 78}
+\definecolor{bordeau}{RGB}{109, 7, 26}
+\definecolor{rose}{RGB}{253, 63, 146}
+\definecolor{car}{RGB}{150,0, 24}
+\definecolor{grey}{RGB}{206,206,206}
+\definecolor{violine}{RGB}{161,6,132}
+\definecolor{bleuc}{RGB}{119,181,254}
+\definecolor{vertanis}{RGB}{159,232, 85}
+
+% \usepackage{fourier}
+% \usepackage{fancybox}
+% \usepackage{frcursive}
+% \usepackage{multirow}
+\usepackage{pict2e}
+% \usepackage{verbatim}
+ % \usepackage{fancyvrb}
+\usepackage{listingsutf8}
+
+
+
+
+
+
+
+
+
+
+
+
+
+\usetikzlibrary{arrows,patterns,plotmarks,shapes,snakes,er,3d,automata,backgrounds,topaths,trees,petri,mindmap}
 \usepackage[colorlinks=true,linkcolor=black,bookmarkstype=toc,linktocpage=true]{hyperref}
 \setstretch{1.2}
 \geometry{lmargin=2.5cm,rmargin=2.5cm,vmargin=4cm}
-\setlength{\parindent}{1cm}
+\setlength{\parindent}{0cm}
 %\renewcommand{\thechapter}{\Roman{chapter}}
 \titleformat{\chapter}[display]
 {\bfseries\Large}
@@ -47,39 +96,43 @@
 \renewcommand{\chaptermark}[1]{\markboth{\footnotesize{#1}}{}}
 \setstretch{1.2}
 \pagenumbering{arabic}
-\renewcommand\lstlistingname{Source}
-\renewcommand\lstlistlistingname{Source}
-\lstset{
-language=fortran,
- basicstyle=\setstretch{1}\footnotesize,
- numbers=left,
- numberstyle=\scriptsize,
- numbersep=4pt,
- tabsize=2, 
- extendedchars=true,
- breaklines=true,
- % keywordstyle=\bfseries{\color{black}},
-  commentstyle=\color{gray},
-  frame=b,
-  stringstyle=\setstretch{1}\ttfamily,
-  showspaces=false,
-  showtabs=false,
-  xleftmargin=17pt,
-  framexleftmargin=17pt,
-  framexrightmargin=5pt,
-  framexbottommargin=4pt,
-  showstringspaces=false,
-		 }
- \DeclareCaptionFormat{listing}{\colorbox[gray]{0.20}{\parbox{\textwidth}{\hspace {15pt}#1#2#3}}}
-% \captionsetup[lstlisting]{format=listing,labelfont=white,textfont=white,
-% singlelinecheck=false,margin=0pt,font={bf,footnotesize}}
-\setlength{\parindent}{0cm}
 
-\DeclareCaptionFont{white}{\color{white}}
-%\DeclareCaptionFormat{listing}{\colorbox[cmyk]{0.43, 0.35, 0.35,0.01}{\parbox{\textwidth}{\hspace{15pt}#1#2#3}}}
-\captionsetup[lstlisting]{format=listing,labelfont=white,textfont=white, singlelinecheck=false, margin=0pt, font={bf,footnotesize}}
 
-\newtheorem{mydef}{Définition}
+
+
+\lstset{ 
+  backgroundcolor=\color{lbcolor},   
+  basicstyle=\footnotesize \tt,        
+  breakatwhitespace=false,     
+  columns=fullflexibles,
+  breaklines=true,                 
+  captionpos=b,                    
+  commentstyle=\color{black!70},    
+  deletekeywords={...},            
+  escapeinside={\%*}{*)},          
+  extendedchars=true,              
+  frame={top,bottom},
+  inputencoding=utf8/latin1,                    
+  keepspaces=true,                 
+  keywordstyle=\bf \color{red!50},       
+  language=C++,  
+  mathescape=true,               
+  morekeywords={*,...},            
+  numbers=left,                    
+  numbersep=5pt,                   
+  numberstyle=\tiny\color{white}, 
+  rulecolor=\color{black},          
+  showspaces=false,                
+  showstringspaces=false,          
+  showtabs=false,                  
+  stepnumber=2,                    
+  stringstyle=\color{black!50},     
+  tabsize=1,    
+  texcl=true,                   
+  title=\lstname
+}
+
+\newtheorem{mydef}{Definition}
 
 \newcommand\Image[3][]{%
   \tabular[b]{@{}c@{}}\includegraphics[#1]{#2}\\
@@ -87,18 +140,92 @@ language=fortran,
   \endtabular}
 
 
-% \newcommand{\E}{\mathbf{E}}
-% \newcommand{\H}{\mathbf{H}}
+\newcommand{\W}{\mathbf{W}}
+\newcommand{\w}{\mathbf{w}}
 
 
 \begin{document}
-\def\chaptername{travaux pratiques} 
+\def\chaptername{Chapitre} 
 \input{./title_page_1.tex} 
 \pagestyle{plain}
 \setstretch{1.2}
 
 
 \tableofcontents
+
+
+\newpage
+\null
+\vfill
+Ce document retranscrit le travail effectué dans le cadre du projet éléments finis. Il est découpé en deux parties : la première partie vise à établir un bilan personnel sur les différents thèmes abordés. La seconde partie vise à établir un ensemble de formulations mathématiques qui justifient l'implémentation de la résolution du problème sous-jacent via la librairie \texttt{Feel++}. Les résultats mathématiques énoncés dans ce travail s'appuient directement sur les travaux de M. P. Helluy, M. Thomas Strub ainsi que du travail de thèse de Mlle Anaïs Crestetto. 
+\vfill
+
+
+\chapter{Gestion de projet}
+
+
+Le point de départ du projet repose sur un travail de recherche de M. T. Strub et M. P. Helluy, portant sur la résolution par méthode Galerkin Discontinue des équations de Maxwell 2D dans une cathode hémisphérique. A proprement parler, le seul document mis à ma disposition fut une application \texttt{diode.hpp} écrite dans le langage \texttt{Feelpp} et permettant de résoudre le dit problème.\\
+
+Feel++ pour {\it Finite Element Embedded Library in C++} est une librairie C++ qui permet la résolution d'EDP en 1D, 2D et 3D par des méthodes de type
+éléments finis ou élements spectraux d'ordre arbitraire (y compris en géométrie) en formulation continue ou discontinue sur des maillages de simplexes ou
+d'hypercubes. Les structures de données sont parallèles et le parallélisme est transparent à l'utilisateur.  Cet environnement permet de développer des interfaces de haut
+niveau et de résoudre simplement en quelques lignes des problèmes classiques avec un langage proche du langage mathématiques.\\
+
+ Partant de cette source, voici les tâches qui m'ont été demandées (ou abordées par moi même) :
+
+
+
+\begin{enumerate}
+\item \textbf{Comprendre la source ainsi que me "ré approprier" le code}. Cet axe de travail fut d'autant plus motivé par le fait que la source compilait sans erreur mais que son exécution ne produisait aucun résultat.\\
+N'ayant fait que très peu de \texttt{feelpp} auparavant (dernière utilisation en juin 2013), j'ai tout d'abord du me replonger dans la syntaxe propre à la librairie ainsi qu'a celle du langage \texttt{c++}. Le code de l'application \texttt{diode.hpp} est structuré sous forme de templates, de classes et de méthodes. Cette structure diffère grandement des travaux pratiques \texttt{feelpp} vus jusqu'alors, puisque l'aspect "technique" de l'orienté objet y était volontairement écarté. La première étape fut donc la compréhension de la structure globale (template, méthodes, membres) du code. Moyennant quelques tutoriels sur les templates et le langage \texttt{c++} cette compréhension fut relativement rapide. \\
+De plus, afin de comprendre pleinement l'écriture de cette application, je me suis "auto-formé" à l'écriture d'applications \texttt{fpp}. Pour cela, j'ai consacré une trentaine d'heures (vacances de la Toussaint) à cette tâche en utilisant une méthode simple mais néanmoins très efficace : j'ai cherché à lire la source de chaque application du répertoire \texttt{doc/manual/tutorial} afin d'en extraire les similitudes et de comprendre ce qui était nécessaire à l'écriture d'une application \texttt{feelpp}. Cette méthode m'a très vite initié aux pointeurs partagés \texttt{boost} qui facilitent très grandement le développement d'applications. En complément de cette lecture, j'ai moi même entrepris de réécrire la source \texttt{diode.cpp}, blocs par blocs, en essayant de m'expliquer la signification de chacune des lignes recopiées. Au travers de tout cela, j'ai été en mesure de comprendre pleinement l'architecture de l'application \texttt{diode}.
+\item \textbf{Comprendre la théorie mathématique sous-jacente au problème résolu par l'application \texttt{diode.cpp}}. Pour ce faire, je suis parti des équations de Maxwell en mode transverse magnétique (TM) et j'ai cherché à en établir la formulation Galerkin discontinue. Cela m'a naturellement conduit à étudier la méthode DG en elle même, mais aussi à enrichir mes connaissances sur la notion centrale de flux numérique.
+Ce rapport constitue dans sa majeure partie, l'ensemble des méthodes et des résultats mathématiques qui ont conduit à l'implémentation de l'application \texttt{diode.cpp}. Il constitue en somme, une forme de documentation détaillé.
+\item Re-factorisation du code. Dans le but de trouver ce qui bloquait la génération de résultats, j'ai cherché à refactoriser certains éléments. De plus, cette refactorisation permettait, à mon sens, de mieux coller à la structure des autres applications de la documentation \texttt{feelpp}, comme par exemple \texttt{heatns} ou \texttt{stokes}
+\item \textbf{Interfaçage avec les solveurs temporels explicites de la librairie \texttt{petsc}}. L'intégration en temps du problème étudié, est actuellement effectué par des méthodes explicites en temps codées "à la main".  Dans le but d'obtenir de meilleurs performances ainsi qu'un choix étendu de méthodes d'intégrations, une des idées suggérée fut d'utiliser les solveurs de la librairie \texttt{petsc}. J'ai essayé d'étudier cet aspect, mais à mon humble avis, il regorgeait d'aspects techniques (informatique) dépassant largement mes compétences et le cadre d'un cours éléments finis.
+\item \textbf{Extension du problème à la dimension 3}. L'application résout actuellement les équations de Maxwell 2D en mode transverse magnétique. J'ai cherché à étendre en dimension 3, certains résultats de la partie "theorique". Les matrices de flux ont été calculées.
+\item \textbf{Génération de résultats}. Suite à plusieurs bogue, l'un du à la non présence du type d'exporter dans le fichier de configuration (Cela ma couté 1 mois de recherche) ainsi que deux ";" en trop sur les "Physical Entities" du fichier .geo, je n'ai pu générer une foule de résultats graphiques. Néanmoins, tant bien que mal, j'ai réussi à contourner le problème en calculant des ordres de convergence de schéma employé pour les degrés $1$ $2$ et $3$.
+\end{enumerate}
+
+\begin{figure}[!h]
+\begin{center}
+
+  \begin{gantt}{10}{12}
+    \begin{ganttitle}
+    \numtitle{1}{1}{12}{1}
+    \end{ganttitle}
+    \ganttbar{Compréhension du code}{0}{2}
+    \ganttbarcon{Refactorisation \& Debug}{4}{7}
+     \ganttbar{Théorie mathématique 2D}{4}{4}
+	 \ganttbarcon{Théorie modèle 3D}{8}{1}
+	 \ganttbarcon{Résultats/convergence}{11}{1}
+	  \ganttbar{Rédaction 2D}{5}{2}
+	  \ganttbarcon{Rédaction finale}{11}{1}
+  \end{gantt}
+\end{center}
+\end{figure}
+\captionof{figure}{Planning sur les 12 semaines couvrant la période du 27/10/2014 au 12/01/2015}
+
+En terme de volume horaire, il faut environ compter entre deux à quatre heures de travail hebdomadaire.
+
+
+
+\section{Travaux futurs}
+Pour le re-preneur éventuel de ce projet\dots
+\begin{enumerate}
+\item Trouver des "containers" appropriés pour le passage aux fonctions. Actuellement on passe les 6 composantes en 3D, cela donne une mauvaise lisibilité du code.
+\item Trouver la bonne macro pour passer les éléments sur une base de polynômes de Legendre. J'ai cherché dans tout le \texttt{github} aucun exemple n'est fournis sur la création d'un espace de fonctions avec des éléments de Legendre.
+\item Création d'une fonction solution exacte. Cela éviterait la duplication de code actuelle.
+\item Évaluer l'ordre en temps du schéma, ainsi que l'accumulation d'erreur aux degrés faibles.
+\item Interfacer les solveurs temporels \texttt{petsc} pour une plus grande flexibilité.
+\item Ajout d'un terme source dans les équation de Maxwell.
+\item Ajout d'une correction de la divergence pour contrer l'accumulation d'erreur numérique voir Travaux de M. E. Sonnendrücker.
+\item Étude des conditions aux bords. Benchmark 3D.
+\end{enumerate}
+
+\section{Retour sur l'expérience}
+Ce projet m'a permis dans un premier temps de découvrir plus pleinement la syntaxe \texttt{Feell++}, ainsi que la foule de possibilités offertes par ce langage. Dans un second temps j'ai pu approfondir mon champ de connaissance sur le domaine des systèmes hyperboliques linéaires, ainsi que sur la méthode Galerkin discontinu. Ce document, constituera je l'espère un bon document de travail à quiconque souhaitera poursuivre les travaux de Thomas Strub via la librairie \texttt{Feel++}. Une porte à été ouverte sur le traitement 3D du problème. L'expérience fût pour moi pleinement enrichissante.
+
 
 \chapter{Modèle mathématique}
 \section{Présentation du problème}
@@ -113,7 +240,10 @@ On considère ici les équations de Maxwell 2D a-dimensionnées et sans terme so
 \end{aligned}
 \end{equation}
 
-où $\mathbf{E}(\mathbf{x},t)$, désigne le champ électrique et $\mathbf{H}(\mathbf{x},t)$ le champ magnétique, tout deux dépendant de la variable d'espace $\mathbf{x}=(x_1,x_2)\in \Omega \subset \mathbb{R}^2$ et du temps $t$. En se plaçant en coordonnées cartésiennes et considérant le mode transverse magnétique (TM) (où $\mathbf{H}$ à une unique composante suivant $z$), il vient alors,
+où $\mathbf{E}(\mathbf{x},t)$, désigne le champ électrique et $\mathbf{H}(\mathbf{x},t)$ le champ magnétique, tous deux dépendant de la variable d'espace $\mathbf{x}=(x_1,x_2)\in \Omega \subset \mathbb{R}^2$ et du temps $t$.\\
+
+
+En se plaçant en coordonnées cartésiennes et considérant le mode transverse magnétique (TM) (où $\mathbf{H}$ à une unique composante suivant $z$), il vient alors,
 
 \begin{eqnarray}
 \partial_t E_x - \partial_y H_z  &=& 0, \label{eq:2a}\\
@@ -121,24 +251,26 @@ où $\mathbf{E}(\mathbf{x},t)$, désigne le champ électrique et $\mathbf{H}(\ma
 \partial_t H_z + \partial_x E_y - \partial_y E_x &=& 0, \label{eq:2c}
 \end{eqnarray}
 
+These are linear equations, that we will try to solve numerically. For this, we will use the C++ library \texttt{feelpp}. This free library allows problem solving by high order discontinuous Galerkin method using both Lagrange and Legendre polynomial.
 
-Ce sont ces équations que nous allons chercher à résoudre numériquement. Pour cela on utilisera la librairie C \texttt{SCHNAPS}. Cette librairie permet la résolution par méthode Galerkin discontinue de systèmes de lois de conservation hyperboliques de forme générale,
+
+Ce sont ces équations \textbf{linéaires} que nous allons chercher à résoudre numériquement. Pour cela on utilisera la librairie C\texttt{Feelp++}.
+
+\section{System of conservation laws}
+Dans cette section nous allons montrer l'hyperbolicité du système précédent, qui peut être associé à un système de lois de conservation linéaire. On introduit pour cela le systeme de lois de conservation suivant,
 
 \begin{equation}
 \label{eq:sysh}
 \partial_t \mathbf{W} +  \partial_i F^i(\mathbf{W}) = S(\mathbf{W}).
 \end{equation}
 
-où, $\mathbf{W}(\mathbf{x},t) \in \mathbb{R}^n$ désigne la variable conservative dépendant de la variable d'espace $\mathbf{x} = (x_1,x_2,x_3)$ et du temps $t$. Les termes $F^i$ désignant quant à eux les composantes du flux et $S$ le terme source.\newline
+où, $\mathbf{W}(\mathbf{x},t) \in \mathbb{R}^n$ désigne la variable conservative dépendant de la variable d'espace $\mathbf{x} = (x_1,x_2,x_3)$ et du temps $t$. Les termes $F^i$ désignant quant à eux les composantes du flux (physique) et $S$ le terme source.\newline
 
 \textbf{Remarque } : Afin d'alléger la notation, on utilise ici la convention d'Einstein sur les indices répétés : on substituera par $\partial_i F^i$ le terme $\sum_{i=1}^{3}\partial _i F^i$.\newline
 
 
-\section{Système de lois de conservation}
-
-Afin de résoudre numériquement les équations (\ref{eq:2a}), (\ref{eq:2b}) et (\ref{eq:2c}) via la librairie \texttt{SCHNAPS}, il nous faut tout d'abord les réécrire sous la forme d'un système de lois de conservation du type (\ref{eq:sysh}).\newline
-
 En notant tout d'abord le vecteur $\mathbf{W}$ et les matrices, $\mathbf{A}^1$ et $\mathbf{A}^2$, tels que
+
 
 \begin{equation}
 \mathbf{W}=
@@ -162,7 +294,7 @@ B_z
 -1 & 0 & 0\\
 \end{pmatrix},
 \end{equation}
-les équations (\ref{eq:2a}), (\ref{eq:2b}) et (\ref{eq:2c}) deviennent,
+les équations (\ref{eq:2a}), (\ref{eq:2b}) and (\ref{eq:2c}) deviennent,
 
 \begin{equation}
 \label{eq:sysh2}
@@ -170,14 +302,33 @@ les équations (\ref{eq:2a}), (\ref{eq:2b}) et (\ref{eq:2c}) deviennent,
 \end{equation}
 
 
-Montrons à présent l'hyperbolicité du système (\ref{eq:sysh2}), grâce au théorème suivant, (\ref{})
-\newline
+
+Montrons à présent l'hyperbolicité du système (\ref{eq:sysh2}), grâce au théorème suivant,
 \begin{mydef}
-Le système (\ref{eq:sysh2}) est dit hyperbolique si pour tout vecteur $(n_1,n_2 )^T \in 
-\mathbb{R}^2$, la matrice $\mathbf{A}^in_i = \mathbf{A}^1 n_1 + \mathbf{A}^2 n_2$ est diagonalisable et ses valeurs propres sont réelles.\newline
+\label{th1}
+Pour tout $j=1,\dots,d$ et soit,
+
+\begin{equation}
+\mathbf{A}^j(\mathbf{u}) = \left( \frac{\partial f_{ij}}{\partial u_k} (\mathbf{u}) \right)_{1\leq i,k\leq p}
+\end{equation}
+
+la matrice Jacobienne de $\mathbf{f}_j(\mathbf{u})$, le système (\ref{eq:sysh2})est dit hyperbolique, si pour tout $\mathbf{u}=(u_1,\dots u_p) \in\Omega$ et $\mathbf{n}=(n_1,\dots, n_d) \in \mathbb{R}^d$, $\mathbf{n} \neq 0$ la matrice,
+
+\begin{equation}
+\mathbf A^jn_j = \mathbf{A}(\mathbf{u},\mathbf{n}) = \sum\limits_{j=1}^d \mathbf{A}^j(\mathbf{u})n_j 
+\end{equation}
+
+a $p$ valeurs propres $\lambda_1(\mathbf{u},\mathbf{n}) \leq \lambda_2(\mathbf{u},\mathbf{n}) \leq \dots \leq  \lambda_p(\mathbf{u},\mathbf{n}) $ et $p$ vecteurs propres linéairement indépendants, $\mathbf{r_1}(\mathbf{u},\mathbf{n}), \dots, \mathbf{r_p}(\mathbf{u},\mathbf{n})$, \textit{ie} 
+\begin{equation}
+\mathbf{A}(\mathbf{u},\mathbf{n})\mathbf{r_k}(\mathbf{u},\mathbf{n}) = \lambda_k(\mathbf{u},\mathbf{n})\mathbf{r_k}(\mathbf{u},\mathbf{n}), \quad 1\leq k \leq p.
+\end{equation}
+De plus, si les valeurs propres $\lambda_k(\mathbf{u},\mathbf{n})$ sont toute distinctes, le système (\ref{eq:sysh2}) est dit strictement hyperbolique.
 \end{mydef}
 
-Cela nous donne, $\forall (n_1,n_2 )^T \in \mathbb{R}^2$,
+
+
+
+Ainsi, $\forall (n_1,n_2 )^T \in \mathbb{R}^2$,
 
 \begin{equation}
 \mathbf{A}^i n_i = \mathbf{A}^1 n_1 + \mathbf{A}^2 n_2 =
@@ -197,11 +348,11 @@ Cela nous donne, $\forall (n_1,n_2 )^T \in \mathbb{R}^2$,
 0 & 0 & -n_2\\
 0 & 0 & n_1\\
 -n_2 & n_1 & 0\\
-\end{pmatrix}
+\end{pmatrix}.
 \end{equation}
 
 
-En résolvant en $\{\lambda_1,\lambda_2,\lambda_2\}$ l'équation suivante,
+En résolvant l'équation suivante
 
 \begin{equation}
 \mbox{det} (\mathbf{A}^i n_i - \lambda\mathbb{I}) =
@@ -213,40 +364,45 @@ En résolvant en $\{\lambda_1,\lambda_2,\lambda_2\}$ l'équation suivante,
 =0,
 \end{equation}
 
-on obtient comme valeurs propres de la matrice $\mathbf{A}^i n_i$, 
+on obitent alors comme valeurs propres $\{\lambda_1,\lambda_2,\lambda_2\}$pour la matrice $\mathbf{A}^i n_i$, 
 \begin{equation}
 \label{eq:vp}
 \lambda_1 = -\sqrt{n_1^2 + n_2^2},\quad \lambda_2 =0,\quad \lambda_3 = \sqrt{n_1^2 + n_2^2},
 \end{equation}
 
-et en posant pour tout $(n_1^2 + n_2^2) \neq 0 $ 
+en posantl $(n_1^2 + n_2^2) \neq 0 $ 
 $$r=\sqrt{n_1^2 + n_2^2},$$
- on a pour vecteur propre associés,
+on a alors pour vecteurs propres associés
 
 \begin{equation}
-\mathbf{v}_{\lambda_1}=\frac{1}{r}
+\mathbf{r}_{1}=
 \begin{pmatrix}
-n2\\
--n1\\
-r
+-n_2\\
+n_1\\
+-r
 \end{pmatrix},
 \qquad
-\mathbf{v}_{\lambda_2}=\frac{1}{r}
+\mathbf{r}_2=
 \begin{pmatrix}
--\frac{rn_1}{n_2}\\
-r\\
+n_1\\
+n_2\\
 0
 \end{pmatrix},
 \qquad
-\mathbf{v}_{\lambda_3}=\frac{1}{r}
+\mathbf{r}_{3}=
 \begin{pmatrix}
--n2\\
-n1\\
+-n_2\\
+n_1\\
 r
 \end{pmatrix}.
 \end{equation}
+\begin{center}
+\fbox{Ainsi le système est strictement hyperbolique.}\\
+\end{center}
+\textbf{Remarque} : De plus comme la matrice $\mathbf{A}^in_i $ est, symétrique le système est dit de Friedrich.\\
 
-Ainsi, le système est bien hyperbolique. De plus, comme la matrice $\mathbf{A}^in_i $ est symétrique, le système sera dit de Friedrich.\\
+
+\subsection{Conditions aux limites}
 
 Afin d'assurer l'existence et l'unicité d'une solution au problème (\ref{eq:sysh2}) nous lui ajoutons la condition initiale suivante,
 
@@ -255,34 +411,29 @@ Afin d'assurer l'existence et l'unicité d'une solution au problème (\ref{eq:sy
 \mathbf{W}(\mathbf{x},0)=\mathbf{W}_0(\mathbf{x}),
 \end{equation}
 
-ainsi que la condition au bord,
+et la condition aux bords
 
 \begin{equation}
 \label{eq:bound} 
 \mathbf{M}(\mathbf{x})(\mathbf{W}-\mathbf{W}_{in})=0\quad\forall \mathbf{x} \in \partial \Omega.
 \end{equation}
 
-avec, $\mathbf{W}_0$, $\mathbf{W}_{in}$ et $\mathbf{M}$ donnés.\newline
+avec, $\mathbf{W}_0$, $\mathbf{W}_{in}$ et $\mathbf{M}$ donné.\newline
 
-L'existence et l'unicité d'une solution à (\ref{eq:sysh2}) sont subordonnées au fait que la matrice $\mathbf{M}$ vérifie,
-
+L'existence et l'unicité d'une solution à (\ref{eq:sysh2}) sont subordonnées au fait que la matrice $\mathbf{M}$ vérifie (voir thèse de Anaïs Crestetto),
 \begin{equation}
 \label{eq:ctr1}
 \mathbf{N} = \frac{1}{2} \mathbf{A}^in_i + \mathbf{M}\quad \mbox{(existence)},
 \end{equation}
 
-avec $\mathbf{N}$ une matrice positive et que,
+avec $\mathbf{N}$ une matrice définit positive telle que,
 
 \begin{equation}
 \label{eq:ctr2}
-\mbox{Ker}\mathbf{M} \subset \mbox{Ker}\mathbf{A}^in_i \quad \mbox{(unicité)}.
+\mbox{Ker}\mathbf{M} \subset \mbox{Ker}\mathbf{A}^in_i \quad \mbox{(unicity)}.
 \end{equation}
 
-\textbf{Note :} Les contraintes (\ref{eq:ctr1}), (\ref{eq:ctr2}) portant sur la matrice $\mathbf{M}$ s'obtiennent par calcul d'une estimation d'énergie vérifiant le théorème de Hille-Yosida. Nous ne détaillerons pas ici ce calcul. Pour plus de détails on renverra le lecteur à (\ref{}).\\
-\newline
-
-
-Ainsi sous ces conditions, le problème revient alors à trouver $\mathbf{W}\in\Omega \times [0,T]$ solution de l'équation,
+Ainsi sous ces condition le problème revient à trouver  $\mathbf{W}\in\Omega \times [0,T]$ solution de,
 
 \begin{equation}
 \label{eq:final}
@@ -295,44 +446,283 @@ Ainsi sous ces conditions, le problème revient alors à trouver $\mathbf{W}\in\
 \right.
 \end{equation}
 
+ici, $\mathbf{W}_{in}$ désigne la solution exacte.
 
-\section{Formulation faible du problème}
+\section{Formalisme Galerkin Discontinu (DG)}
 
-On considère un maillage fait de d'un nombre finis $N\in \mathbb{N}$ d'ouverts disjoints (ou cellules) $\Omega_k \subset \Omega$, $k=1\dots N$ tel que,
+\subsection{Formulation faible}
+
+On considère le problème (\ref{eq:final}) et on se donne un découpage fini de notre domaine $\Omega$ tel que
+
 \begin{equation}
-\bar{\Omega} = \cup_k \bar{\Omega}_k.
+\bar{\Omega} = \cup_k \bar{L}_k.
 \end{equation}
 
-Nous allons à présent raisonner localement, en définissant l'ensemble $V$ tel que la restriction de $\mathbf{W}(x,t)$ sur la maille $\Omega_k$ appartienne à $(H^1[\Omega_k])^3$, d'où,
+En considérant à présent la restriction sur une maille $L_k$ d'une solution régulière $\mathbf{W}_k$ on définit le domaine suivant,
+
+\begin{equation}
+V = \left\{\mathbf{W}(.,t) : \Omega \rightarrow \mathbb{R}^3\ | \ \mathbf{W}_{|L_k}(.,t) \in  (H^1(L_k))^3 \right\}
+\end{equation}
+
+
+On peut alors définir le domaine de régularité de notre solution $\mathbf{W}$ tel que,
+\begin{equation}
+R = \cup_k L_k
+\end{equation} 
+ainsi que le domaine sur lequel la fonction admet $\mathbf{W}$ l'ensemble de ses discontinuités
+
+\begin{equation}
+\Omega - R = D = \cup_k \partial L_k
+\end{equation}
+
+
+\textbf{Remarque} comme la fonction $\mathbf{W}$ n'est pas continue au travers d'une surface appartenant à $D$, il nous faut définir les valeurs $\mathbf{W}_L$ et $\mathbf{W}_R$ respectivement associées aux valeurs de la fonction $\mathbf{W}$
+à gauche et à droite de la discontinuité. De la même manière il nous faut définir par $\mathbf{\phi}_L$ et $\mathbf{\phi}_R$ respectivement les valeurs de la fonction test du coté gauche et droit de la discontinuité. De la même manière il nous faut définir par $\mathbf{\phi}_L$ et $\mathbf{\phi}_R$ respectivement les valeurs de la fonction test $\mathbf{\phi}$ du coté gauche et droit de la discontinuité. \\
+\newline
+
+On obtient alors comme formulation faible du problème, trouver $\mathbf{W} \in V$ solution du problème, $\forall \mathbf{\phi} \in V$
+
+\begin{equation}
+\int_R \partial_t \mathbf{W} \cdot \mathbf{\phi}+
+\int_R  (\mathbf{A}^i \partial i \mathbf{W}) \cdot \mathbf{\phi}+
+\int_D \mathbf{F}^*(\mathbf{W}_L,\mathbf{W}_R,\mathbf{\phi}_L,\mathbf{\phi}_R)+
+\int_{\partial \Omega} (\mathbf{M}(\mathbf{W}_L - \mathbf{W}_{inc})\cdot \mathbf{\phi}_L.\\
+\end{equation}
 
 
 
+\textbf{Remarque 1} :  Les conditions de Dirichlet au bord du domaine sont imposées faiblement par le biais d'une valeur gauche $\mathbf{W}_L \in D \cap \partial \Omega$.\\
+\newline
+\textbf{Remarque 2} :  La fonction $\mathbf{F}^*$, appelée flux numérique, cherchera à approximer (sous certaines conditions) le flux physique réel $\mathbf{F}$ (non défini à l'interface) par le biais d'une combinaison bien choisie d'états gauches et droits. A ce stade du développement, aucune forme explicite de  $\mathbf{F}^*$ n'a encore été donnée.
 
-\section{Flux numérique}
-Comme $\mathbf{W}$ n'est pas supposé continue aux interfaces $\partial \Omega_k$ il nous est interdit de définir $F(\mathbf{W},n)$
-Pour les équations de Maxwell on utilisera un flux numérique décentré en amont tel que,
 
-%general
+\subsection{Introduction de la méthode}
+Tout comme la méthode éléments finis (FEM), la méthode Galerkin discontinue (DG) cherche à représenter les inconnues par des fonctions polynômiales. Néanmoins, contrairement à la FEM, ces polynômes ne sont pas considérés comme continus aux interfaces des cellules découpant notre domaine de calcul. Ainsi, de par cette particularité importante, et dans un souci de transfert "d'informations" inter-cellule, il nous faudra employer la notion centrale de flux numérique.\newline
+
+ L'idée de la méthode (DG) est de partir d'un maillage fait d'un nombre finis $N\in \mathbb{N}$ de cellules  $L_k \subset \Omega$, $k=1\dots N$ (ouvertes et disjointes) telles que
+\begin{equation}
+\bar{\Omega} = \cup_k \bar{L}_k.
+\end{equation}
+
+et de chercher à approcher notre inconnue $\mathbf{W}$ dans chaque cellule par une combinaison linéaire de fonctions polynomiales. Ainsi, dans chaque cellule $L_k$, on considère une base de fonctions polynomiales de degrés $d$ et à support dans $L_k$ telle que,
+\begin{equation}
+\phi^{L_k}_i(\mathbf{x}) \in \mathbb{P}^{d}(L_k)\ i=1,\dots d.
+\end{equation}
+Enfin on suppose que notre solution approchée $\mathbf{W}^h$ peut s'écrire localement de la manière suivante,
+
+\begin{equation}
+\label{approx}
+\mathbf{W}^h_{L_k}(\mathbf{x},t) = \sum\limits_{j=1}^d \mathbf{W}_{L_k}(\mathbf{x}_j,t) \phi_j^L (\mathbf{x}) \quad \forall \mathbf{x} \in L_k
+\end{equation}
+
+
+Dans l'expression (\ref{approx2}) l'indice $i$ représente le nœud dans la maille $L_k$ sur lequel est évaluée la quantité $\mathbf{W}^h_{L_k}$. Pour la suite on notera la quantité $\mathbf{W}_{L_k}(\mathbf{x}_j,t)$ par $\mathbf{W}_{L_k}^j(t)$.\\
+On constatera également que la solution globale  $\mathbf{W}^h(t)$ est entièrement déterminée par ses composantes (inconnues du problème discret) $\mathbf{W}_{L_k}^j(t)$.\\
+
+Afin de déterminer les inconnues $\mathbf{W}_{L_k}^j(t)$, on multiplie l'expression (méthode Galerkin) (\ref{}) par une fonction $\phi^{L_k}(\mathbf{x})$ et on intègre par partie sur $L_k$ . On a alors $\forall k$
+
+\begin{equation}
+\label{schema}
+\frac{d\mathbf{W}_{L_k}^j(t)}{dt}\int_{L_k}\phi^{L_k}_n(\mathbf{x}) \phi^{L_k}_j(\mathbf{x})dx - \int_{L_k}  \mathbf{A}^i \mathbf{W}_{L_k}^j(t)\partial_i \phi^{L_k}_n(\mathbf{x}) \phi^{L_k}_j dx  \int_{\partial L_k} \mathbf{F}^*( \mathbf{W}_L,\mathbf{W}_R,\mathbf{n}) \phi^{L_k}_j= 0.
+\end{equation}
+
+
+Comme la fonction $\mathbf{W}$ n'est pas supposée continue aux interfaces des cellules, il nous est impossible de définir la quantité $\mathbf{A}^i \mathbf{W}\phi_j^{L_k}$ sur $\partial L_k$. Ainsi, il nous faut introduire un flux numérique $\mathbf{F}^*$ qui va chercher à approcher le flux physique réel $\mathbf{F}$ aux interfaces. Ce flux numérique sera calculé à partir des états gauches $\mathbf{W_L}$ et droit $\mathbf{W_R)}$ de la surface partagée entre les deux cellules voisines.
+\newline
+
+\textbf{Remarque :} C'est ce dernier qui assurera la "propagation d'informations" entre les différentes cellules de notre maillage.
+
+
+On remarque que la formule précédente s'appuie sur l'interface entre deux cellules voisines (deux états : gauche/droit), de ce fait, dans sa forme actuelle, elle ne traite pas les bords du domaine $\partial \Omega$. Afin de prendre en compte les conditions aux limites du problème, nous remplacerons le flux numérique  $\mathbf{F}^*( \mathbf{W}_L,\mathbf{W}_R,\mathbf{n})$ par un flux numérique ne prenant en compte que l'état gauche de la maille tel que $\partial L_k \cap \partial \Omega \neq \emptyset$. On notera ce flux par,
+
+\begin{equation}
+\mathbf{F}^b( \mathbf{W}_L,\mathbf{n}) \quad \forall k\ | \ \partial L_k \cap \partial \Omega \neq \emptyset
+\end{equation}
+
+
+
+\textbf{Remarque :} Ce flux numérique dépendra des conditions aux bords que nous imposerons sur notre domaine. Dans l'implémentation actuelle les conditions aux bords sont mises en place au travers d'état fantôme.
+
 % \begin{equation}
-% \begin{aligned}
-% F^*(\mathbf{W}_L,\mathbf{W},\mathbf{n}) &= \frac{1}{2}\mathbf{A}^i n_i(\mathbf{W_L} +\mathbf{W_R}) - \frac{1}{2}|\mathbf{A}^i n_i|(\mathbf{W_R} - \mathbf{W_L}),\\
-% &=\frac{1}{2}\mathbf{A}^i n_i(\mathbf{W_L} +\mathbf{W_R}) - \frac{1}{2}(\mathbf{A}^i n_i^+ - \mathbf{A}^i n_i^-)(\mathbf{W_R} - \mathbf{W_L}),
-% \end{aligned}
+% \int_{L_k} \partial_t \mathbf{W} \phi^{L_k}_j - \int_{L_k} \mathbf{A}^i \mathbf{W} \partial_i \phi_j^{L_k} + \int_{\partial L_k} \mathbf{F}^*( \mathbf{W}_L,\mathbf{W}_R,\mathbf{n}) \phi^{L_k}_j= 0.
 % \end{equation}
 
 
+\section{Avancée en temps}
 
 
-\begin{mydef}
-Pour les équation de Maxwell le flux numérique décentré en amont est donnée par,
+On remarque que l'expression semi-discrète (\ref{schema}) peut se réécrire sur tout le domaine de calcul sous la forme
+
 \begin{equation}
-\label{eq:fluxnum}
-F^*(\mathbf{W_L},\mathbf{W_R},\mathbf{n}) = \mathbf{A}^i n_i^+\mathbf{W_L} + \mathbf{A}^i n_i^-\mathbf{W_R}
+\frac{d\mathbf{W}_{h}(t)}{dt} = Q\left(\mathbf{W}_{h}(t),t\right)
 \end{equation}
-avec $\mathbf{A}^i n_i^+$ et $\mathbf{A}^i n_i^-$ les parties positives et négatives de $\mathbf{A}^i n_i$.
+
+ce qui correspond à un système d'équations différentielles ordinaires (EDO). Il existe plusieurs méthodes pour résoudre ce type de systèmes, dans \texttt{SCHNAPS} nous utiliserons une méthode de Runge-Kutta d'odre 2. On a alors,
+
+
+\begin{equation}
+\begin{aligned}
+\mathbf{K}_1 &= Q\left(\mathbf{W}_{h}^j(t),t\right)\\
+\mathbf{K}_2 &= Q\left(\mathbf{W}_{h}^j(t)\ + 0.5\Delta_t\mathbf{K}_1 ,t + 0.5\Delta_t \right)\\
+\mathbf{W}_{h}(t+\Delta_t) &= \mathbf{W}_{h}(t+\Delta_t) + \Delta_t\mathbf{K}_2
+\end{aligned}
+\end{equation}
+avec $\Delta_t$ le pas du temps du système donné par la condition $0 < \mathrm{CFL} \leq 1$ suivante,
+
+\begin{equation}
+\Delta_t \leq \mathrm{CFL} \frac{\max\limits_k(\lambda_k) \min\limits_\Omega (h)}{2d+1}
+\end{equation}
+
+où $d$ désigne l'ordre polynomiale employé, $h$ la taille de la maille, et l$\lambda_k$ les valeurs propres de $\mathbf{A}$
+
+
+\subsubsection{Implémentation \textbf{Feel++}}
+L'intégration en temps via la méthode RK2 est la suivante, ici les paramètre CFL et Tfinal sont passés en option au lancement du programme.
+\textbf{Remarque} : Les champs sont initialisés à $t=0$ avec la projection $L^2$ de la solution exacte sur l'espace d'approximation $X_h$.
+\begin{center}
+\begin{minipage}{\textwidth}
+\begin{lstlisting}[label=code2,caption=Integration en temps : run()]
+//Definition de l'operation de projection
+auto L2ProjDisc = opProjection( _domainSpace=Xh, _imageSpace=Xh, _type=L2 );
+//Projection de la solution exacte sur l'espace d'approximation
+Exn = L2ProjDisc->project( Ex_ex_expr );
+Eyn = L2ProjDisc->project( Ey_ex_expr );
+Bzn = L2ProjDisc->project( Bz_ex_expr );
+
+//Calcul du pas de temps
+dt= CFL*meshSize/( 2*Order_poly+1 );
+time = 0;
+//Assemblage de la matrice de masse M
+this-> assemble_LHS();
+
+//Methode RK2
+while (time <= Tfinal){
+	Assemblage du terme RHS
+	this->assemble_RHS(time, Exn, Eyn, Bzn);
+	//Resolution du systeme MW=RHS par la methode solve
+	this->solve(dtExn,dtEyn,dtBzn);
+	//K1
+	Exn.add( dt/2.0, dtExn);
+	Eyn.add( dt/2.0, dtEyn);
+	Bzn.add( dt/2.0, dtBzn);
+	time=time + dt/2.0;
+	//K2
+	this->assemble_RHS(time, Exn, Eyn, Bzn);
+	this->solve(dtExn,dtEyn,dtBzn);
+	Exn.add( dt, dtExn);
+	Eyn.add( dt, dtEyn);
+	Bzn.add( dt, dtBzn);
+	time = time + dt/2.0;
+//Export des resultats...
+}
+\end{lstlisting}
+\end{minipage}
+\end{center}
+
+\section{Flux numérique}
+Dans cette section on vise à établir une forme explicite du flux numérique $\mathbf{F}^*$.
+\subsection{Résolution du problème de Riemann local}
+Le problème auquel nous sommes confrontés actuellement, est de trouver un flux numérique qui tend à approcher le flux physique lorsque la taille de la maille tend vers 0 \textit{ie}
+\begin{equation}
+\mathbf{F}^*(\mathbf{W},\mathbf{W},\mathbf{n}) = \mathbf{F }(\mathbf{W},\mathbf{n}) \quad (\mbox{Consistence})
+\end{equation}
+De la même manière, celui-ci devra vérifier la propriété de conservation telle que, 
+
+\begin{equation}
+\mathbf{F}^*(\mathbf{W}_L,\mathbf{W}_R,\mathbf{n}_{L/R}) = -\mathbf{F}^*(\mathbf{W}_R,\mathbf{W}_L,\mathbf{n}_{R/L}).
+\end{equation}
+
+La construction d'un flux numérique est une procédure locale pouvant être vue dans le cadre de la méthode DG comme la résolution d'un problème de Riemann à l'interface entre deux cellules voisines. Ainsi, en plaçant en $0$ cette interface, le problème de Riemann local associé à l'équation (\ref{}) devient,
+
+\begin{equation}
+\label{Riem}
+\left\{
+\begin{aligned}
+\partial_t \mathbf{W} + \mathbf{A}^i \partial_i \mathbf{W} &= 0,\\
+\mathbf{W}(0,\mathbf{x}) &= \left\{
+\begin{aligned}
+&\mathbf{W}_L& &\mbox{ si } x < 0&\\
+&\mathbf{W}_R& &\mbox{ si } x \geq 0&
+\end{aligned}
+\right.
+\end{aligned}
+\right.
+\end{equation}
+avec $\mathbf{W}_L$ et $\mathbf{W}_L$ deux vecteurs constants connus. Comme le système est strictement hyperbolique (\ref{}) on peu réécrire 
+\begin{equation}
+\mathbf{A}^i n_i=\mathbf{P}D\mathbf{P}^{-1},
+\end{equation}
+
+où $\mathbf{D}$ est la matrice diagonale contenant les valeurs propres de $\mathbf{A}^i n_i$. Ainsi en introduisant les variables caractéristiques tel que 
+\begin{equation}
+\mathbf{V} = \mathbf{P}^{-1}\mathbf{W}
+\end{equation}
+et en multipliant à gauche le système (\ref{k}) par $\mathbf{P}^{-1}$, il vient,
+\begin{equation}
+\mathbf{P}^{-1} \partial_t \mathbf{W} + \mathbf{P}^{-1} \mathbf{A}^i \mathbf{P}^{1}\mathbf{P}^{-1}   \partial_i \mathbf{W} = \partial_t \mathbf{V} + \mathbf{D} \partial_i \mathbf{V}  = 0.
+\end{equation}
+
+On constate à présent que dans le système de variable $\mathbf{V}$ le système (\ref{Riem}) est réduit à un ensemble d'équations de transport linéaires, telles que 
+
+\begin{equation}
+\label{trans}
+\partial_t v_i + \lambda_i \partial_x v_i ) 0, \quad 1\leq i \leq n,
+\end{equation}
+où les $v_i$ sont les composantes de $\mathbf{V}$ et les vitesses $\lambda_i$ les valeurs propre associées à  $\mathbf{A}^i$.
+La solution exacte de l'une de ces équations (\ref{trans}) est 
+\begin{equation}
+v_i(t,x) = v_i(0, x-\lambda_it)
+\end{equation} 
+or d'après les conditions initiales de (\ref{Riem}) on a, 
+
+\begin{equation}
+v_i(t,\mathbf{x}) = \left\{
+\begin{aligned}
+&v_{i,L}& &\mbox{ si } x < \lambda_it,&\\
+&v_{i,R}& &\mbox{ si } x \geq \lambda_it.&
+\end{aligned}
+\right.
+\end{equation}
+
+
+Or on cherche à résoudre le problème de Riemann $\forall t > 0$ et  centré en $x=0$, d'où
+
+
+\begin{equation}
+v_i(t,\mathbf{x}) = \left\{
+\begin{aligned}
+&v_{i,L}& &\mbox{ si }  0 <\lambda_i,&\\
+&v_{i,R}& &\mbox{ si } 0 \geq \lambda_i .&
+\end{aligned}
+\right.
+\end{equation}
+ Ainsi $\forall t > 0$, il vient sous forme matricielle en notant par $\mathbf{D}^+$ et $\mathbf{D}^+$ les parties positive et négative de $\mathbf{D}$,
+
+\begin{equation}
+\mathbf{D} \mathbf{V}(t,0) = \mathbf{D}^+\mathbf{V}(t,0) + \mathbf{D}^-\mathbf{V}(t,0)  =  \mathbf{D}^+\mathbf{V}_L  + \mathbf{D}^+\mathbf{V}_R 
+\end{equation}
+ 
+ Enfin en notant par $\mathbf{A}^in_i^+= \mathbf{P}\mathbf{D}^+\mathbf{P}^{-1}$ et  $\mathbf{A}^in_i^-= \mathbf{P}\mathbf{D}^-\mathbf{P}^{-1}$, on obtient de retour dans le système de variables conservatives $\mathbf{W}$,
+ 
+ \begin{equation}
+ \label{flux1}
+\mathbf{A} \mathbf{W}(t,0) = \mathbf{A} \mathbf{D}^+\mathbf{V}(t,0) + \mathbf{A}\mathbf{D}^-\mathbf{V}(t,0)  =  \mathbf{A}\mathbf{D}^+\mathbf{V}_L  + \mathbf{A} \mathbf{D}^+\mathbf{V}_R = \mathbf{A}^in_i^+\mathbf{W}_L + \mathbf{A}^in_i^-\mathbf{W}_R.
+\end{equation}
+ 
+Ainsi, on peut à présent définir un flux numérique (moyennant un calcul explicite $\mathbf{A}^i n_i^+$ et $\mathbf{A}^i n_i^-$ ) entre deux cellules voisines en utilisant la valeur du coté gauche de l'interface $\mathbf{W}_L$ et celle du coté droit $\mathbf{W}_R$. On arrive ainsi à la définition suivante,
+ 
+\begin{mydef}
+Pour un système hyperbolique linéaire, le flux numérique décentré en amont s'écrit 
+ \begin{equation}
+ \mathbf{F}^*(\mathbf{W_L},\mathbf{W_R},\mathbf{n}) = \mathbf{A}^i n_i^+\mathbf{W_L} + \mathbf{A}^i n_i^-\mathbf{W_R}
+ \end{equation}
+ avec $\mathbf{A}^i n_i^+$ et $\mathbf{A}^i n_i^-$ les parties positives et négatives de $\mathbf{A}^i n_i$.
 \end{mydef}
 
-Pour les obtenir $\mathbf{A}^i n_i^+$ et $\mathbf{A}^i n_i^-$ on utilise tout d'abord le fait que, 
+
+\subsection{Calcul de $\mathbf{A}^i n_i^+$ et $\mathbf{A}^i n_i^-$}
+
+Pour obtenir les matrices $\mathbf{A}^i n_i^+$ et $\mathbf{A}^i n_i^-$ on utilise tout d'abord le fait que, 
 
 \begin{equation}
 \mathbf{D} =\mathbf{P}^{-1}\mathbf{A}^in_i\mathbf{P}=
@@ -348,16 +738,16 @@ avec $\mathbf{P}$ la matrice de passage et $\mathbf{P}^{-1}$ son inverse, telles
 \begin{equation}
 \mathbf{P}=\frac{1}{r}
 \begin{pmatrix}
-n2 & -\frac{rn_1}{n_2} &-n2\\
--n1 & r & n1\\
-r & 0 & r\\
+-n2 & n1 &-n2\\
+n1 & n2 & n1\\
+-r & 0 & r\\
 \end{pmatrix}
 \quad \mbox{et} \quad
-\mathbf{P}^{-1}=\frac{1}{2r}
+\mathbf{P}^{-1}=\frac{1}{2r^2}
 \begin{pmatrix}
-n_2 & -n_1 &r\\
-\frac{2n_1n_2}{r} & \frac{2n_2^2}{r} & 0\\
--n_2^2 & n_1 & r\\
+-n_2 & n_1 & -r\\
+2n_1 & 2n_2 & 0\\
+-n_2 & n_1 & r\\
 \end{pmatrix}.
 \end{equation}
 
@@ -367,7 +757,7 @@ Ensuite en notant par $\mathbf{D}^+$ et $\mathbf{D}^+$ les parties positive et n
 \mathbf{A}^in_i^+= \mathbf{P}\mathbf{D}^+\mathbf{P}^{-1} = \frac{1}{2}
 \begin{pmatrix}
 \frac{n_2^2}{r} & \frac{-n_1n_2}{r}  & -n_2 \\
--n_1n_2& n_1^2 & n_1\\
+-\frac{n_1n_2}{r}& \frac{n_1^2}{r} & n_1\\
 -n_2& n_1 & r\\
 \end{pmatrix}
 \end{equation}
@@ -376,11 +766,504 @@ et
 \mathbf{A}^in_i^-= \mathbf{P}\mathbf{D}^-\mathbf{P}^{-1} = \frac{1}{2}
 \begin{pmatrix}
 \frac{-n_2^2}{r} & \frac{n_1n_2}{r}  & -n_2 \\
-n_1n_2& -n_1^2 & n_1\\
+-\frac{n_1n_2}{r}&  -\frac{n_1^2}{r} & n_1\\
 -n_2& n_1 & -r\\
 \end{pmatrix}.
 \end{equation}
 
+
+\subsubsection{Implémentation \textbf{Feel++}}
+
+Le flux numérique est ainsi implémenté de la manière suivante,
+
+\subsubsection{Implémentation \textbf{Feel++}}
+L'intégration en temps via la méthode RK2 est la suivante, ici les paramètres CFL et Tfinal sont passés en option au lancement du programme.
+\textbf{Remarque} : Les champs sont initialisés à $t=0$ avec la projection $L^2$ de la solution exacte sur l'espace d'approximation $X_h$.
+\begin{center}
+\begin{minipage}{\textwidth}
+\begin{lstlisting}[label=code2,caption=calcul du flux numerique decentre: assemble\_RHS()]
+//Definition des matrices A+ et A-
+auto Anp_1 = vec( 0.5*Ny()*Ny(), -0.5*Nx()*Ny(), -0.5*Ny() );
+auto Anp_2 = vec( -0.5*Nx()*Ny(), 0.5*Nx()*Nx(), 0.5*Nx() );
+auto Anp_3 = vec( -0.5*Ny(), 0.5*Nx(), cst(0.5) );
+auto Anm_1 = vec( -0.5*Ny()*Ny(), 0.5*Nx()*Ny(),-0.5*Ny() );
+auto Anm_2 = vec( 0.5*Nx()*Ny(), -0.5*Nx()*Nx(), 0.5*Nx() );
+auto Anm_3 = vec( -0.5*Ny(), 0.5*Nx(), cst(-0.5) );
+
+/*Definition des valeur wR et wL*/
+auto wR = vec( rightfacev( idv( Exn ) ),rightfacev( idv( Eyn ) ),rightfacev( idv( Bzn ) ) );
+auto wL = vec( leftfacev( idv( Exn ) ),leftfacev( idv( Eyn ) ),leftfacev( idv( Bzn ) ) );
+
+/*L integration porte sur les faces internes du maillage 
+   a savoir sur le domaine de discontinuite 
+*/
+lf_Ex +=integrate(	_range=internalfaces(mesh),
+							_expr=	( trans(Anm_1)*(wL-wR))*leftface(id(v) )
+									+  ( trans(Anp_1)*(wL-wR))*rightface(id(v) ) );
+	
+lf_Ey +=integrate(	_range=internalfaces(mesh),
+							_expr=	( trans(Anm_2)*(wL-wR))*leftface(id(v) )
+									+  ( trans(Anp_2)*(wL-wR))*rightface(id(v) ) );
+	
+	
+lf_Bz +=integrate(	_range=internalfaces(mesh),
+							_expr=	( trans(Anm_3)*(wL-wR))*leftface(id(v) )
+									+  ( trans(Anp_3)*(wL-wR))*rightface(id(v) ) );
+
+\end{lstlisting}
+\end{minipage}
+\end{center}
+
+
+\subsection{Choix du flux numérique}
+
+En complément du flux décentré en amont (upwind) vu précédemment, on pourra utiliser plusieurs autres types de flux. 
+
+\subsubsection{Flux centré}
+Un flux numérique très simple est le flux centré qui consiste à prendre la valeur moyenne (arithmétique) entre les flux physiques émanant de gauche et de droite de l'interface. On obtient alors la définition suivante 
+
+\begin{mydef}
+Dans notre cas, le flux numérique centré s'écrit 
+\begin{equation}
+ \mathbf{F}^*( \mathbf{W}_L,\mathbf{W}_R,\mathbf{n})  = \frac{1}{2}\mathbf{A}^i n_i(\mathbf{W_R} - \mathbf{W_L}),
+ \end{equation}
+\end{mydef}
+
+
+\subsubsection{Flux de Rusanov}
+Dans le cadre des équations de Maxwell étudiées ici, nous prendrons comme célérité des ondes $\sqrt{\epsilon\mu} = c =1$ (problème adimensionné).  Une alternative à la résolution du problème de Riemann local consiste à partir d'un flux centré et à lui ajouter un terme de viscosité. On définit alors le flux de Rusanov de la manière suivante
+
+\begin{mydef}
+\begin{equation}
+ \mathbf{F}^*( \mathbf{W}_L,\mathbf{W}_R,\mathbf{n})  = \frac{1}{2}\mathbf{A}^i n_i(\mathbf{W_R} - \mathbf{W_L}) -\frac{1}{2}\max\limits_k |\lambda_k| (\mathbf{W_R} - \mathbf{W_L})
+ \end{equation}
+où $\max\limits_k |\lambda_k|$ représente le module de la plus grande valeur propre de $\mathbf{A}^i n_i$. Dans notre cas nous avons $\max\limits_k |\lambda_k|=\sqrt{n_1^2 + n_2^2} = r$
+\end{mydef}
+
+Le flux numérique est ainsi implémenté de la manière suivante,
+
+\subsubsection{Implémentation \texttt{Feel++}}
+L'implémentation du flux centré à été effectué dans \texttt{Feel++}, cependant les résultats obtenus ne paraissaient pas cohérents
+\begin{center}
+\begin{minipage}{\textwidth}
+\begin{lstlisting}[label=code2,caption=calcul du flux numerique decentre: assemble\_RHS()]
+lf_Ex+=integrate( 	_range=internalfaces(mesh),
+							_expr=0.5*trans(Aini_1)*(wL-wR)*(leftface(id(v)) +rightface(id(v))) );
+lf_Ey+=integrate( 	_range=internalfaces(mesh),
+							_expr=0.5*trans(Aini_2)*(wL-wR)*(leftface(id(v)) +rightface(id(v))) );
+lf_Bz+=integrate( 	_range=internalfaces(mesh),
+							_expr=0.5*trans(Aini_3)*(wL-wR)*(leftface(id(v)) +rightface(id(v))) );
+\end{lstlisting}
+\end{minipage}
+\end{center}
+
+
+
+\subsubsection{Combinaison linéaire d'un flux centré et décentré en amont}
+
+Enfin, il sera aussi possible d'employer une combinaison linéaire d'un flux centré et décentré. Celle-ci permet par exemple, d'obtenir une bonne stabilité tout en diminuant la diffusivité du schéma décentré. Ce schéma a bien entendu un coût calculatoire plus élevé. En notant un paramètre $0 \leq \theta \leq 1$ on a alors comme définition du flux numérique,
+
+\begin{mydef}
+\begin{equation}
+ \mathbf{F}^*( \mathbf{W}_L,\mathbf{W}_R,\mathbf{n})  = \frac{\theta}{2}\mathbf{A}^i n_i(\mathbf{W_R} - \mathbf{W_L}) + (1 -\theta)(\mathbf{A}^i n_i^+\mathbf{W_L} + \mathbf{A}^i n_i^-\mathbf{W_R})
+ \end{equation}
+\end{mydef}
+
+
+
+
+
+\section{Implémentation}
+
+Dans cette section, nous allons détailler les différentes fonctions mises en place
+
+
+\begin{enumerate}
+
+\item Premier terme intégral de la formulation faible
+
+\begin{center}
+\begin{minipage}{\textwidth}
+\begin{lstlisting}[label=code2,caption=Terme integral 1]
+// Definition des formes lineaires composante par composante
+auto lf_Ex=form1( _test=Xh, _vector=RHS_Ex,_init=true );
+auto lf_Ey=form1( _test=Xh, _vector=RHS_Ey,_init=true );
+auto lf_Bz=form1( _test=Xh, _vector=RHS_Bz,_init=true );
+
+//Calcul du premier terme de la Formulation faible
+lf_Ex=integrate(_range=elements(mesh),_expr= id(v)*dyv(Bzn));
+lf_Ey=integrate(_range=elements(mesh),_expr=-id(v)*dxv(Bzn));
+lf_Bz=integrate(_range=elements(mesh),_expr=-id(v)*dxv(Eyn)+id(v)*dyv(Exn));
+\end{lstlisting}
+\end{minipage}
+\end{center}
+
+
+\item Flux numérique décentré
+
+\begin{center}
+\begin{minipage}{\textwidth}
+\begin{lstlisting}[label=code2,caption=Flux numerique decentre]
+/* Upwind Flux : 	Matrices Aini(+) and Aini(-)  for upwind flux 	*/
+auto Anp_1 = vec( 0.5*Ny()*Ny(), -0.5*Nx()*Ny(), -0.5*Ny() );
+auto Anp_2 = vec( -0.5*Nx()*Ny(), 0.5*Nx()*Nx(), 0.5*Nx() );
+auto Anp_3 = vec( -0.5*Ny(), 0.5*Nx(), cst(0.5) );
+auto Anm_1 = vec( -0.5*Ny()*Ny(), 0.5*Nx()*Ny(),-0.5*Ny() );
+auto Anm_2 = vec( 0.5*Nx()*Ny(), -0.5*Nx()*Nx(), 0.5*Nx() );
+auto Anm_3 = vec( -0.5*Ny(), 0.5*Nx(), cst(-0.5) );
+	
+
+lf_Ex +=integrate(_range=internalfaces(mesh),_expr=( trans(Anm_1)*(wL-wR))*leftface(id(v) )
+																		   + ( trans(Anp_1)*(wL-wR))*rightface(id(v) ) );
+
+lf_Ey +=integrate(_range=internalfaces(mesh),_expr=( trans(Anm_2)*(wL-wR))*leftface(id(v) )
+																		   + ( trans(Anp_2)*(wL-wR))*rightface(id(v) ) );
+
+
+lf_Bz +=integrate(_range=internalfaces(mesh),_expr=( trans(Anm_3)*(wL-wR))*leftface(id(v) )
+																		   + ( trans(Anp_3)*(wL-wR))*rightface(id(v) ) );
+\end{lstlisting}
+\end{minipage}
+\end{center}
+
+
+\item Flux numérique centré,
+
+\begin{center}
+\begin{minipage}{\textwidth}
+\begin{lstlisting}[label=code2,caption=Flux numerique centre]
+auto Aini_1 = vec(cst(0.), cst(0.),-Ny() );
+auto Aini_2 = vec(cst(0.), cst(0.), Nx() );
+auto Aini_3 = vec(-Ny() , Nx() ,cst(0.) );
+
+lf_Ex+=integrate( _range=internalfaces(mesh),_expr=0.5*(trans(Aini_1)*(wL*(leftface(id(v)) - wR*rightface(id(v))))));
+lf_Ey+=integrate( _range=internalfaces(mesh),_expr=0.5*(trans(Aini_2)*(wL*(leftface(id(v)) - wR*rightface(id(v))))));
+lf_Bz+=integrate( _range=internalfaces(mesh),_expr=0.5*(trans(Aini_3)*(wL*(leftface(id(v)) - wR*rightface(id(v))))));
+\end{lstlisting}
+\end{minipage}
+\end{center}
+
+\item Flux numérique de Rusanov,
+\begin{center}
+\begin{minipage}{\textwidth}
+\begin{lstlisting}[label=code2,caption=Flux numerique de Rusanov]
+/*Rusanov fux :  Here Lmax denotes the max velocity of waves, physicaly the speed. Matrices Aini are re-used.
+lf_Ex+=integrate( _range=internalfaces(mesh),_expr=0.5*(trans(Aini_1)*(wL*(leftface(id(v)) - wR*rightface(id(v)))))
+																- lmax*0.5*(trans(Aini_1)*(wL*(leftface(id(v)) - wR*rightface(id(v))))));
+lf_Ey+=integrate( _range=internalfaces(mesh),_expr=0.5*(trans(Aini_2)*(wL*(leftface(id(v)) - wR*rightface(id(v)))))
+																- lmax*0.5*(trans(Aini_2)*(wL*(leftface(id(v)) - wR*rightface(id(v))))));
+lf_Bz+=integrate( _range=internalfaces(mesh),_expr=0.5*(trans(Aini_3)*(wL*(leftface(id(v)) - wR*rightface(id(v)))))
+																- lmax*0.5*(trans(Aini_3)*(wL*(leftface(id(v)) - wR*rightface(id(v))))));
+\end{lstlisting}
+\end{minipage}
+\end{center}
+
+\end{enumerate}
+
+\chapter{Résultats}
+
+\section{Convergence en espace}
+
+Nous allons chercher à mettre en évidence l'ordre de convergence spatiale pour la méthode DG. Pour cela, on utilise la technique des solutions manufacturées. On considère la solution $\mathbf{W}^{ex}$) suivante,
+
+\begin{equation}
+\mathbf{W}^{ex}=
+\begin{bmatrix}
+E_x^{ex}\\
+E_y^{ex}\\
+H_z^{ex}\\
+\end{bmatrix}
+=
+\begin{bmatrix}
+0\\
+\cos(\pi(x-t))\\
+\cos(\pi(x-t))\\
+\end{bmatrix}
+\end{equation}
+
+Vérifions à présent que $\mathbf{W}_{ex}$ satisfait bien (\ref{}).
+
+
+\begin{equation}
+\begin{aligned}
+\partial_t Ex^{ex} - \partial_y H_z^{ex} &= 0 + 0\\
+\partial_t Ey^{ex} + \partial_x H_z^{ex} &= \cos(-\pi) + 0 = 0\\
+\partial_t Hz^{ex} + \partial_x E_y^{ex} - \partial_y E_x^{ex}  &= \cos(-\pi) + \cos(\pi) + 0 = 0\\
+\end{aligned}
+\end{equation}
+ce qui prouve que $\mathbf{W}_{ex}$ est bien une solution du système (\ref{}) $\forall (x,t) \in \mathbb{R} \times \mathbb{R}+$.\\
+
+
+Afin d'étudier la convergence en espace de la méthode (DG) employée, nous nous plaçons sur un domaine $\Omega$ de type cercle unité (domaine de calcul) et imposons faiblement sur les bords, la solution exacte, via le flux $\mathbf{F}^b$.
+ Nous comparerons ensuite l'erreur en norme $L_2$ (sur la composante $Bz$) entre la solution exacte et approchée (DG) sur l'ensemble du domaine $\Omega$ en fonction de la taille du maillage $h$ et de l'ordre polynomial $d$ employés. Les résultats sont tous donnés pour $t=0.5s$. Ci-dessous les résultats obtenus, pour la géométrie cercle unité, une condition CFL$=0.1$ et un flux numérique décentré en amont.
+
+ \begin{table}[h]
+    \centering
+    \pgfplotstableread{order1.dat}\loadedtable
+    \pgfplotstabletypeset[columns={h,order1},
+    columns/{h}/.style={column name=$\min(h)$,
+    column type=c,sci, sci zerofill,precision=3
+    },
+    columns/{order1}/.style={
+    column name=Erreur en norme $\|\cdot\|_{L_2}$,column type=c,
+    sci,sci zerofill,
+    precision=3},
+	 every head row/.style={before row=\toprule,after row=\midrule},
+    every last row/.style={after row=\bottomrule}
+    ]\loadedtable
+     \caption{Étude de la convergence spatiale, erreur entre la solution exacte et approchée en norme $L_2$ en fonction de $h$. Ici $d=1$ et $t=0.5s$}
+    \label{tab:1}
+  \end{table}
+  \begin{figure}[h]
+    \centering
+    \begin{tikzpicture}[scale=1]
+      \begin{loglogaxis}[x=6cm,
+        xlabel=$h$,ylabel=$\|\mathbf{W}^{ex}-\mathbf{W}_{h}\|_{L_2}$,
+        legend style={at={(0,1)}, anchor=north west}]
+        \addplot table[x=h,y={create col/linear regression={y=order1}}]{order1.dat};
+        \xdef\slopea{\pgfplotstableregressiona}
+        \addlegendentry{Ordre $d=1$ : $\log{erreur}$, pente = $\pgfmathprintnumber{\slopea}$}
+		 \end{loglogaxis}
+    \end{tikzpicture}
+     \caption{Étude de la convergence spatiale, erreur entre la solution exacte et approchée en norme $L_2$ en fonction de $h$. Ici $d=1$ et $t=0.5s$. Composante $Bz$/}
+    \label{fig:res}
+  \end{figure}
+
+ \begin{table}[h]
+    \centering
+    \pgfplotstableread{order2.dat}\loadedtable
+    \pgfplotstabletypeset[columns={h,order2},
+    columns/{h}/.style={column name=$\min(h)$,
+    column type=c,sci, sci zerofill,precision=3
+    },
+    columns/{order2}/.style={
+    column name=Erreur en norme $\|\cdot\|_{L_2}$,column type=c,
+    sci,sci zerofill,
+    precision=3},
+	 every head row/.style={before row=\toprule,after row=\midrule},
+    every last row/.style={after row=\bottomrule}
+    ]\loadedtable
+     \caption{Étude de la convergence spatiale, erreur entre la solution exacte et approchée en norme $L_2$ en fonction de $h$. Ici $d=2$ et $t=1s$. Composante $Bz$}
+    \label{tab:1}
+  \end{table}
+  \begin{figure}[h]
+    \centering
+    \begin{tikzpicture}[scale=1]
+      \begin{loglogaxis}[x=6cm,
+        xlabel=$h$,ylabel=$\|\mathbf{W}^{ex}-\mathbf{W}_{h}\|_{L_2}$,
+        legend style={at={(0,1)}, anchor=north west}]
+        \addplot table[x=h,y={create col/linear regression={y=order2}}]{order2.dat};
+        \xdef\slopea{\pgfplotstableregressiona}
+        \addlegendentry{Ordre $d=2$ : $\log{erreur}$, pente = $\pgfmathprintnumber{\slopea}$}
+		 \end{loglogaxis}
+    \end{tikzpicture}
+     \caption{Étude de la convergence spatiale, erreur entre la solution exacte et approchée en norme $L_2$ en fonction de $h$. Ici $d=2$ et $t=1s$. Composante $Bz$.}
+    \label{fig:res}
+  \end{figure}
+
+
+  \begin{table}[h]
+    \centering
+    \pgfplotstableread{order3.dat}\loadedtable
+    \pgfplotstabletypeset[columns={h,order3},
+    columns/{h}/.style={column name=$\min(h)$,
+    column type=c,sci, sci zerofill,precision=3
+    },
+    columns/{order3}/.style={
+    column name=Erreur en norme $\|\cdot\|_{L_2}$,column type=c,
+    sci,sci zerofill,
+    precision=3},
+	 every head row/.style={before row=\toprule,after row=\midrule},
+    every last row/.style={after row=\bottomrule}
+    ]\loadedtable
+     \caption{Étude de la convergence spatiale, erreur entre la solution exacte et approchée en norme $L_2$ en fonction de $h$. Ici $d=3$ et $t=1s$. Composante $Bz$}
+    \label{tab:1}
+  \end{table}
+  \begin{figure}[h]
+    \centering
+    \begin{tikzpicture}[scale=1]
+      \begin{loglogaxis}[x=6cm,
+        xlabel=$h$,ylabel=$\|\mathbf{W}^{ex}-\mathbf{W}_{h}\|_{L_2}$,
+        legend style={at={(0,1)}, anchor=north west}]
+        \addplot table[x=h,y={create col/linear regression={y=order3}}]{order3.dat};
+        \xdef\slopea{\pgfplotstableregressiona}
+        \addlegendentry{Ordre $d=3$ : $\log{erreur}$, pente = $\pgfmathprintnumber{\slopea}$}
+		 \end{loglogaxis}
+    \end{tikzpicture}
+     \caption{Étude de la convergence spatiale, erreur entre la solution exacte et approchée en norme $L_2$ en fonction de $h$. Ici $d=3$ et $t=1s$. Composante $Bz$.}
+    \label{fig:res}
+  \end{figure}
+  
+ Cela montre le degré élevé de la méthode employée.
+  
+  
+\begin{center}
+\Image[width=0.5\linewidth]{./fig/Fig1.png}{Composante $Bz$}
+\captionof{figure}{Exemple de résultat graphique obtenu pour $d=2$ $t=1.2$ $h_{min}=0.1$ et CFL=0.1} 
+\end{center}
+
+Ci-dessous, exemple graphique d'un résultat obtenu pour la diffraction, de la solutions exacte utilisée précédemment. La diffraction est obtenu en imposant une conditions de conducteur métallique parfait sur le cylindre centrale. On retourne simplement le champ électrique en imposant par un état fantôme $Ex_L=-Ex$, $Ey_L=-Ey$ et $Bz_L=Bz$. Les conditions sont alors implémentées comme suit,
+
+\begin{center}
+\begin{minipage}{\textwidth}
+\begin{lstlisting}[label=code2,caption=Conditions aux bords]
+auto wex=vec(Ex_ex_expr,Ey_ex_expr,Bz_ex_expr);
+auto wMetal = vec( -leftfacev( idv( Exn ) ),-leftfacev( idv( Eyn ) ),leftfacev( idv( Bzn ) ) );
+// auto wSivlerM= vec( leftfacev( idv( Exn ) ),-leftfacev( idv( Eyn ) ),-leftfacev( idv( Bzn ) ) );
+
+lf_Ex += integrate(markedfaces( mesh, "Dirichlet" ),trans(Anm_1)*(wL-wex)*id(v) );
+lf_Ey += integrate(markedfaces( mesh, "Dirichlet" ),trans(Anm_2)*(wL-wex)*id(v) );
+lf_Bz += integrate(markedfaces( mesh, "Dirichlet" ),trans(Anm_3)*(wL-wex)*id(v) );
+
+lf_Ex += integrate(markedfaces( mesh, "Metal" ),trans(Anm_1)*(wL-wMetal)*id(v) );
+lf_Ey += integrate(markedfaces( mesh, "Metal" ),trans(Anm_2)*(wL-wMetal)*id(v) );
+lf_Bz += integrate(markedfaces( mesh, "Metal" ),trans(Anm_3)*(wL-wMetal)*id(v) );
+\end{lstlisting}
+\end{minipage}
+\end{center}
+
+
+\begin{center}
+\Image[width=0.7\linewidth]{./fig/Fig2.png}{Composante $Bz$}
+\captionof{figure}{Exemple de résultats obtenus avec une condition de conducteur métallique parfait sur le cercle centrale}
+\end{center}
+
+Je ne sais actuellement, pas si les résultats sont cohérents, il faudrait que je trouve un benchmark pour comparer. De la même manière $t=1$ semble un peu court pour voir suffisamment de détails.
+\chapter{Extension à la dimension 3}
+\section{Équations 3D}
+%We consider here, 3D adimensional Maxwell equations without source term such that, $\forall (\mathbf{x},t) \in \Omega \times [0,T]$,
+On considère ici les équations de Maxwell 3D a-dimensionnées et sans terme source telles que $\forall (\mathbf{x},t) \in \Omega \times [0,T]$,
+
+\begin{equation}
+\begin{aligned}
+\label{eq:1}
+\partial_t \mathbf{E} + \nabla \times \mathbf{H} &= 0,\\
+\partial_t \mathbf{H} - \nabla \times \mathbf{E} &= 0.
+\end{aligned}
+\end{equation}
+
+% where $\mathbf{E}(\mathbf{x},t)$, refers to the electrical field and $\mathbf{H}(\mathbf{x},t)$ to the magnetic one. Both fields are considered dependent of the space variable  $\mathbf{x}=(x_1,x_2,x_3)\in \Omega \subset \mathbb{R}^3$ and of the time $t$.\\
+où $\mathbf{E}(\mathbf{x},t)$, désigne le champ électrique et $\mathbf{H}(\mathbf{x},t)$ le champ magnétique, tous deux dépendants de la variable d'espace $\mathbf{x}=(x_1,x_2,x_3)\in \Omega \subset \mathbb{R}^3$ et du temps $t$.\\
+
+
+Cela nous donne en coordonnée cartésienne,
+
+\begin{eqnarray}
+\partial_t E_x - \partial_y H_z + \partial_z H_y    &=& 0, \label{eq:3a}\\
+\partial_t E_y - \partial_z H_x + \partial_x H_z    &=& 0, \label{eq:3b}\\
+\partial_t E_z - \partial_x H_y + \partial_y H_x    &=& 0, \label{eq:3c}\\
+\partial_t H_x + \partial_y E_z - \partial_z E_y    &=& 0, \label{eq:3d}\\
+\partial_t H_y + \partial_z E_x - \partial_x E_z    &=& 0, \label{eq:3e}\\
+\partial_t H_z + \partial_x E_y - \partial_y E_x    &=& 0, \label{eq:3f}.
+\end{eqnarray}
+
+
+En notant par $\mathbf{W}$ et $\mathbf{A}^1$, $\mathbf{A}^2$ les matrices tels que
+
+\begin{equation}
+\mathbf{W}=
+\begin{pmatrix}
+E_x\\
+E_y\\
+E_z\\
+H_x\\
+H_y\\
+H_z\\
+\end{pmatrix},
+\qquad
+\mathbf{A}^1=
+\begin{pmatrix}
+0 & 0 & 0 & 0 & 0 & 0\\
+0 & 0 & 0 & 0 & 0 & 1\\
+0 & 0 & 0 & 0 & -1 & 0\\
+0 & 0 & 0 & 0 & 0 & 0\\
+0 & 0 & -1 & 0 & 0 & 0\\
+0 & 1 & 0 & 0 & 0 & 0\\
+\end{pmatrix},
+\qquad
+\mathbf{A}^2=
+\begin{pmatrix}
+0 & 0 & 0 & 0 & 0 & -1\\
+0 & 0 & 0 & 0 & 0 & 0\\
+0 & 0 & 0 & 1 & 0 & 0\\
+0 & 0 & 1 & 0 & 0 & 0\\
+0 & 0 & 0 & 0 & 0 & 0\\
+-1 & 0 & 0 & 0 & 0 & 0\\
+\end{pmatrix},
+\end{equation}
+\begin{equation}
+\mathbf{A}^3=
+\begin{pmatrix}
+0 & 0 & 0 & 0 & 1 & 0\\
+0 & 0 & 0 & -1 & 0 & 0\\
+0 & 0 & 0 & 0 & 0 & 0\\
+0 & -1 & 0 & 0 & 0 & 0\\
+1 & 0 & 0 & 0 & 0 & 0\\
+0 & 0 & 0 & 0 & 0 & 0\\
+\end{pmatrix}
+\end{equation}
+
+
+on aboutit à la forme conservative suivante,
+
+\begin{equation}
+\label{eq:sysh44}
+\partial_t \mathbf{W} +  \mathbf{A}^i\partial_i \mathbf{W} = 0 \quad \forall (\mathbf{x},t) \in \Omega \times [0,T],
+\end{equation}
+
+Nous allons à présent prouver l'hyperbolicité du système (\ref{eq: sysh44}) thus, $\forall (n_1,n_2,n_3)^T \in \mathbb{R}^3$,
+
+
+\begin{equation}
+\mathbf{A}^i n_i = \mathbf{A}^1 n_1 + \mathbf{A}^2 n_2  + \mathbf{A}^3 n_3 =
+\begin{pmatrix}
+0 & 0 & 0 & 0 & n_3 & -n_2\\
+0 & 0 & 0 & -n_3 & 0 & n_1\\
+0 & 0 & 0 & n_2 & -n_1 & 0\\
+0 & -n_3 & n_2 & 0 & 0 & 0\\
+n_3 & 0 & -n_1 & 0 & 0 & 0\\
+-n_2 & n_1 & 0 & 0 & 0 & 0\\
+\end{pmatrix}
+\end{equation}
+
+
+On obtient alors comme valeurs propres $\{\lambda_1,\lambda_2,\lambda_2\}$de la matrice $\mathbf{A}^i n_i$, 
+\begin{equation}
+\label{eq:vp}
+\lambda_1^{m=2} = -\sqrt{n_1^2 + n_2^2 + n_3^2},\quad \lambda_2^{m=2} =0,\quad \lambda_3^{m=2}  =  \sqrt{n_1^2 + n_2^2 + n_3^2},
+\end{equation}
+
+où $m$ dénote la multiplicité associée. On remarquera que du fait $m=2$ le système n'est plus strictement hyperbolique. \\
+En utilisant la même procédure que pour la partie 2D, on obtient alors pour les matrices $\mathbf{A}^in_i^+$ et $\mathbf{A}^in_i^-$,
+
+\begin{equation}
+\mathbf{A}^in_i^+=
+\begin{pmatrix}
+\frac{{n2}^{2}+{n3}^{2}}{2\,r} & -\frac{n1\,n2}{2\,r} & -\frac{n1\,n3}{2\,r} & 0 & \frac{n3}{2} & -\frac{n2}{2}\cr
+ -\frac{n1\,n2}{2\,r} & \frac{{n1}^{2}+{n3}^{2}}{2\,r} & -\frac{n2\,n3}{2\,r} & -\frac{n3}{2} & 0 & \frac{n1}{2}\cr
+ -\frac{n1\,n3}{2\,r} & -\frac{n2\,n3}{2\,r} & \frac{{n2}^{2}+{n1}^{2}}{2\,r} & \frac{n2}{2} & -\frac{n1}{2} & 0\cr
+ 0 & -\frac{n3}{2} & \frac{n2}{2} & \frac{{n2}^{2}+{n3}^{2}}{2\,r} & -\frac{n1\,n2}{2\,r} & -\frac{n1\,n3}{2\,r}\cr
+ \frac{n3}{2} & 0 & -\frac{n1}{2} & -\frac{n1\,n2}{2\,r} & \frac{{n1}^{2}+{n3}^{2}}{2\,r} & -\frac{n2\,n3}{2\,r}\cr
+ -\frac{n2}{2} & \frac{n1}{2} & 0 & -\frac{n1\,n3}{2\,r} & -\frac{n2\,n3}{2\,r} & \frac{{n2}^{2}+{n1}^{2}}{2\,r}
+ \end{pmatrix}
+  \end{equation}
+ and
+ \begin{equation}
+ \mathbf{A}^in_i^-=
+ \begin{pmatrix}
+ -\frac{{n2}^{2}+{n3}^{2}}{2\,r} & \frac{n1\,n2}{2\,r} & \frac{n1\,n3}{2\,r} & 0 & \frac{n3}{2} & -\frac{n2}{2}\cr
+ \frac{n1\,n2}{2\,r} & -\frac{{n1}^{2}+{n3}^{2}}{2\,r} & \frac{n2\,n3}{2\,r} & -\frac{n3}{2} & 0 & \frac{n1}{2}\cr 
+ \frac{n1\,n3}{2\,r} & \frac{n2\,n3}{2\,r} & -\frac{{n2}^{2}+{n1}^{2}}{2\,r} & \frac{n2}{2} & -\frac{n1}{2} & 0\cr
+ 0 & -\frac{n3}{2} & \frac{n2}{2} & -\frac{{n2}^{2}+{n3}^{2}}{2\,r} & \frac{n1\,n2}{2\,r} & \frac{n1\,n3}{2\,r}\cr
+ \frac{n3}{2} & 0 & -\frac{n1}{2} & \frac{n1\,n2}{2\,r} & -\frac{{n1}^{2}+{n3}^{2}}{2\,r} & \frac{n2\,n3}{2\,r}\cr
+ -\frac{n2}{2} & \frac{n1}{2} & 0 & \frac{n1\,n3}{2\,r} & \frac{n2\,n3}{2\,r} & -\frac{{n2}^{2}+{n1}^{2}}{2\,r}
+ \end{pmatrix}.
+ \end{equation}
+
+
+\textbf{Note} : Ces matrices ont été calculées avec le CAS Maxima fichier \texttt{pef.wxm}.
+
+Ainsi avec l'obtention de ces matrices le passage à l'implémentation 3D sera grandement facilité. Les sources ne sont pas cité ici on renverra le lecteur au fichier \texttt{maxwell\_DG.hpp}.
 
 
 \bibliographystyle{plain}
