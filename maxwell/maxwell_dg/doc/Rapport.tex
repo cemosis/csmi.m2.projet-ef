@@ -235,7 +235,7 @@ On considère ici les équations de Maxwell 2D a-dimensionnées et sans terme so
 \begin{equation}
 \begin{aligned}
 \label{eq:1}
-\partial_t \mathbf{E} + \nabla \times \mathbf{H} &= 0,\\
+\partial_t \mathbf{E} - \nabla \times \mathbf{H} &= 0,\\
 \partial_t \mathbf{H} + \nabla \times \mathbf{E} &= 0.
 \end{aligned}
 \end{equation}
@@ -251,13 +251,13 @@ En se plaçant en coordonnées cartésiennes et considérant le mode transverse 
 \partial_t H_z + \partial_x E_y - \partial_y E_x &=& 0, \label{eq:2c}
 \end{eqnarray}
 
-These are linear equations, that we will try to solve numerically. For this, we will use the C++ library \texttt{feelpp}. This free library allows problem solving by high order discontinuous Galerkin method using both Lagrange and Legendre polynomial.
+%These are linear equations, that we will try to solve numerically. For this, we will use the C++ library \texttt{feelpp}. This free library allows problem solving by high order discontinuous Galerkin method using both Lagrange and Legendre polynomial.
 
 
-Ce sont ces équations \textbf{linéaires} que nous allons chercher à résoudre numériquement. Pour cela on utilisera la librairie C\texttt{Feelp++}.
+Ce sont ces équations \textbf{linéaires} que nous allons chercher à résoudre numériquement. Pour cela on utilisera la librairie \texttt{Feel++}.
 
-\section{System of conservation laws}
-Dans cette section nous allons montrer l'hyperbolicité du système précédent, qui peut être associé à un système de lois de conservation linéaire. On introduit pour cela le systeme de lois de conservation suivant,
+\section{Système de lois de conservation}
+Dans cette section nous allons montrer l'hyperbolicité du système précédent, qui peut être associé à un système de lois de conservation linéaire. On introduit pour cela le système de lois de conservation suivant,
 
 \begin{equation}
 \label{eq:sysh}
@@ -364,7 +364,7 @@ En résolvant l'équation suivante
 =0,
 \end{equation}
 
-on obitent alors comme valeurs propres $\{\lambda_1,\lambda_2,\lambda_2\}$pour la matrice $\mathbf{A}^i n_i$, 
+on obtient alors comme valeurs propres $\{\lambda_1,\lambda_2,\lambda_2\}$pour la matrice $\mathbf{A}^i n_i$, 
 \begin{equation}
 \label{eq:vp}
 \lambda_1 = -\sqrt{n_1^2 + n_2^2},\quad \lambda_2 =0,\quad \lambda_3 = \sqrt{n_1^2 + n_2^2},
@@ -476,8 +476,7 @@ ainsi que le domaine sur lequel la fonction admet $\mathbf{W}$ l'ensemble de ses
 \end{equation}
 
 
-\textbf{Remarque} comme la fonction $\mathbf{W}$ n'est pas continue au travers d'une surface appartenant à $D$, il nous faut définir les valeurs $\mathbf{W}_L$ et $\mathbf{W}_R$ respectivement associées aux valeurs de la fonction $\mathbf{W}$
-à gauche et à droite de la discontinuité. De la même manière il nous faut définir par $\mathbf{\phi}_L$ et $\mathbf{\phi}_R$ respectivement les valeurs de la fonction test du coté gauche et droit de la discontinuité. De la même manière il nous faut définir par $\mathbf{\phi}_L$ et $\mathbf{\phi}_R$ respectivement les valeurs de la fonction test $\mathbf{\phi}$ du coté gauche et droit de la discontinuité. \\
+\textbf{Remarque} comme la fonction $\mathbf{W}$ n'est pas continue au travers d'une surface appartenant à $D$, il nous faut définir les valeurs $\mathbf{W}_L$ et $\mathbf{W}_R$ respectivement associées aux valeurs de la fonction $\mathbf{W}$ à gauche et à droite de la discontinuité. De la même manière il nous faut définir par $\mathbf{\phi}_L$ et $\mathbf{\phi}_R$ respectivement les valeurs de la fonction test du coté gauche et droit de la discontinuité. 
 \newline
 
 On obtient alors comme formulation faible du problème, trouver $\mathbf{W} \in V$ solution du problème, $\forall \mathbf{\phi} \in V$
@@ -486,7 +485,7 @@ On obtient alors comme formulation faible du problème, trouver $\mathbf{W} \in 
 \int_R \partial_t \mathbf{W} \cdot \mathbf{\phi}+
 \int_R  (\mathbf{A}^i \partial i \mathbf{W}) \cdot \mathbf{\phi}+
 \int_D \mathbf{F}^*(\mathbf{W}_L,\mathbf{W}_R,\mathbf{\phi}_L,\mathbf{\phi}_R)+
-\int_{\partial \Omega} (\mathbf{M}(\mathbf{W}_L - \mathbf{W}_{inc})\cdot \mathbf{\phi}_L.\\
+\int_{\partial \Omega} \mathbf{M}(\mathbf{W}_L - \mathbf{W}_{inc})\cdot \mathbf{\phi}_L=0\\
 \end{equation}
 
 
@@ -557,7 +556,7 @@ On remarque que l'expression semi-discrète (\ref{schema}) peut se réécrire su
 \frac{d\mathbf{W}_{h}(t)}{dt} = Q\left(\mathbf{W}_{h}(t),t\right)
 \end{equation}
 
-ce qui correspond à un système d'équations différentielles ordinaires (EDO). Il existe plusieurs méthodes pour résoudre ce type de systèmes, dans \texttt{SCHNAPS} nous utiliserons une méthode de Runge-Kutta d'odre 2. On a alors,
+ce qui correspond à un système d'équations différentielles ordinaires (EDO). Il existe plusieurs méthodes pour résoudre ce type de systèmes, dans \texttt{Feel++} nous utiliserons une méthode de Runge-Kutta d'odre 2. On a alors,
 
 
 \begin{equation}
@@ -666,7 +665,7 @@ On constate à présent que dans le système de variable $\mathbf{V}$ le systèm
 
 \begin{equation}
 \label{trans}
-\partial_t v_i + \lambda_i \partial_x v_i ) 0, \quad 1\leq i \leq n,
+\partial_t v_i + \lambda_i \partial_x v_i = 0, \quad 1\leq i \leq n,
 \end{equation}
 où les $v_i$ sont les composantes de $\mathbf{V}$ et les vitesses $\lambda_i$ les valeurs propre associées à  $\mathbf{A}^i$.
 La solution exacte de l'une de ces équations (\ref{trans}) est 
@@ -699,14 +698,14 @@ v_i(t,\mathbf{x}) = \left\{
  Ainsi $\forall t > 0$, il vient sous forme matricielle en notant par $\mathbf{D}^+$ et $\mathbf{D}^+$ les parties positive et négative de $\mathbf{D}$,
 
 \begin{equation}
-\mathbf{D} \mathbf{V}(t,0) = \mathbf{D}^+\mathbf{V}(t,0) + \mathbf{D}^-\mathbf{V}(t,0)  =  \mathbf{D}^+\mathbf{V}_L  + \mathbf{D}^+\mathbf{V}_R 
+\mathbf{D} \mathbf{V}(t,0) = \mathbf{D}^+\mathbf{V}(t,0) + \mathbf{D}^-\mathbf{V}(t,0)  =  \mathbf{D}^+\mathbf{V}_L  + \mathbf{D}^-\mathbf{V}_R 
 \end{equation}
  
  Enfin en notant par $\mathbf{A}^in_i^+= \mathbf{P}\mathbf{D}^+\mathbf{P}^{-1}$ et  $\mathbf{A}^in_i^-= \mathbf{P}\mathbf{D}^-\mathbf{P}^{-1}$, on obtient de retour dans le système de variables conservatives $\mathbf{W}$,
  
  \begin{equation}
  \label{flux1}
-\mathbf{A} \mathbf{W}(t,0) = \mathbf{A} \mathbf{D}^+\mathbf{V}(t,0) + \mathbf{A}\mathbf{D}^-\mathbf{V}(t,0)  =  \mathbf{A}\mathbf{D}^+\mathbf{V}_L  + \mathbf{A} \mathbf{D}^+\mathbf{V}_R = \mathbf{A}^in_i^+\mathbf{W}_L + \mathbf{A}^in_i^-\mathbf{W}_R.
+\mathbf{A} \mathbf{W}(t,0) = \mathbf{P} \mathbf{D}^+\mathbf{V}(t,0) + \mathbf{P}\mathbf{D}^-\mathbf{V}(t,0)  =  \mathbf{P}\mathbf{D}^+\mathbf{V}_L  + \mathbf{P} \mathbf{D}^-\mathbf{V}_R = \mathbf{A}^in_i^+\mathbf{W}_L + \mathbf{A}^in_i^-\mathbf{W}_R.
 \end{equation}
  
 Ainsi, on peut à présent définir un flux numérique (moyennant un calcul explicite $\mathbf{A}^i n_i^+$ et $\mathbf{A}^i n_i^-$ ) entre deux cellules voisines en utilisant la valeur du coté gauche de l'interface $\mathbf{W}_L$ et celle du coté droit $\mathbf{W}_R$. On arrive ainsi à la définition suivante,
@@ -987,8 +986,8 @@ Vérifions à présent que $\mathbf{W}_{ex}$ satisfait bien (\ref{}).
 \begin{equation}
 \begin{aligned}
 \partial_t Ex^{ex} - \partial_y H_z^{ex} &= 0 + 0\\
-\partial_t Ey^{ex} + \partial_x H_z^{ex} &= \cos(-\pi) + 0 = 0\\
-\partial_t Hz^{ex} + \partial_x E_y^{ex} - \partial_y E_x^{ex}  &= \cos(-\pi) + \cos(\pi) + 0 = 0\\
+\partial_t Ey^{ex} + \partial_x H_z^{ex} &= \pi(x-t)\sin(\pi(x-t)) +\pi(x-t)\sin(\pi(x-t)) = 0\\
+\partial_t Hz^{ex} + \partial_x E_y^{ex} - \partial_y E_x^{ex}  &= \pi(x-t)\sin(\pi(x-t)) - \pi(x-t)\sin(\pi(x-t)) + 0 = 0\\
 \end{aligned}
 \end{equation}
 ce qui prouve que $\mathbf{W}_{ex}$ est bien une solution du système (\ref{}) $\forall (x,t) \in \mathbb{R} \times \mathbb{R}+$.\\
@@ -1043,7 +1042,7 @@ Afin d'étudier la convergence en espace de la méthode (DG) employée, nous nou
 	 every head row/.style={before row=\toprule,after row=\midrule},
     every last row/.style={after row=\bottomrule}
     ]\loadedtable
-     \caption{Étude de la convergence spatiale, erreur entre la solution exacte et approchée en norme $L_2$ en fonction de $h$. Ici $d=2$ et $t=1s$. Composante $Bz$}
+     \caption{Étude de la convergence spatiale, erreur entre la solution exacte et approchée en norme $L_2$ en fonction de $h$. Ici $d=2$ et $t=0.5s$. Composante $Bz$}
     \label{tab:1}
   \end{table}
   \begin{figure}[h]
@@ -1057,7 +1056,7 @@ Afin d'étudier la convergence en espace de la méthode (DG) employée, nous nou
         \addlegendentry{Ordre $d=2$ : $\log{erreur}$, pente = $\pgfmathprintnumber{\slopea}$}
 		 \end{loglogaxis}
     \end{tikzpicture}
-     \caption{Étude de la convergence spatiale, erreur entre la solution exacte et approchée en norme $L_2$ en fonction de $h$. Ici $d=2$ et $t=1s$. Composante $Bz$.}
+     \caption{Étude de la convergence spatiale, erreur entre la solution exacte et approchée en norme $L_2$ en fonction de $h$. Ici $d=2$ et $t=0.5s$. Composante $Bz$.}
     \label{fig:res}
   \end{figure}
 
@@ -1211,7 +1210,7 @@ on aboutit à la forme conservative suivante,
 \partial_t \mathbf{W} +  \mathbf{A}^i\partial_i \mathbf{W} = 0 \quad \forall (\mathbf{x},t) \in \Omega \times [0,T],
 \end{equation}
 
-Nous allons à présent prouver l'hyperbolicité du système (\ref{eq: sysh44}) thus, $\forall (n_1,n_2,n_3)^T \in \mathbb{R}^3$,
+Nous allons à présent prouver l'hyperbolicité du système (\ref{eq: sysh44}) ainsi, $\forall (n_1,n_2,n_3)^T \in \mathbb{R}^3$,
 
 
 \begin{equation}
